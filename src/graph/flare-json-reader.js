@@ -6,6 +6,8 @@ import FillStyle from "./shapes/fill-style.js";
 import CirclePath from "./shapes/circle-path.js";
 import Animation from "../animation/animation.js";
 import AnimationPropertyKey from "../animation/animation-property-key.js";
+import Path from "./shapes/path.js";
+import Point from "./shapes/point.js";
 
 export default class FlareJSONReader {
     constructor() { }
@@ -39,9 +41,17 @@ export default class FlareJSONReader {
         if (p == 'strokeStart') {
             return 'start';
         }
+        if (p == 'strokeEnd') {
+            return 'end';
+        }
         if (p == 'strokeWidth') {
             return 'width';
         }
+        if (p == 'strokeOffset') {
+            return 'offset';
+        }
+
+        if (p == 'scaleX') return 'scaleX';
     }
 
     static readKeyed(keyed, animation, tempstack) {
@@ -81,6 +91,18 @@ export default class FlareJSONReader {
             ani.duration *= 1000;
             this.readKeyed(animation.keyed, ani, tempstack);
             container.addAnimation(ani);
+        });
+    }
+
+    static readPathPoints(path, points) {
+        points.forEach(point => {
+            path.addPoint(new Point({
+                type: point.pointType,
+                x: point.translation[0],
+                y: point.translation[1],
+                in: point.in,
+                out: point.out
+            }));
         });
     }
 
@@ -124,6 +146,26 @@ export default class FlareJSONReader {
                 parent.addPath(path);
             }
 
+            if (node.type == 'path') {
+                let parent = tempstack[node.parent];
+                let path = new Path({
+                    x: node.translation[0],
+                    y: node.translation[1],
+                    width: node.width,
+                    height: node.height,
+                    id: i,
+                    name: node.name,
+                    rotate: node.ratation,
+                    scaleX: node.scale[0],
+                    scaleY: node.scale[1],
+                    opacity: node.opacity,
+                    isClose: node.isClosed
+                });
+                this.readPathPoints(path, node.points);
+                tempstack[i] = path;
+                parent.addPath(path);
+            }
+
             if (node.type == 'colorStroke') {
                 let shape = tempstack[node.parent];
                 let strokeStyle = new StrokeStyle({
@@ -139,7 +181,7 @@ export default class FlareJSONReader {
                     id: i
                 });
                 tempstack[i] = strokeStyle;
-                shape.strokeStyle = strokeStyle;
+                shape.addStrokeStyle(strokeStyle);
             }
 
             if (node.type == 'colorFill') {
@@ -151,7 +193,7 @@ export default class FlareJSONReader {
                     id: i
                 });
                 tempstack[i] = fillStyle;
-                shape.fillStyle = fillStyle;
+                shape.addFillStyle(fillStyle);
             }
         }
     }
