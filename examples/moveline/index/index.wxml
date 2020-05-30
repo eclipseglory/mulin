@@ -1,0 +1,53 @@
+<view class="main">
+    <canvas id="canvas" type="2d" style="width:100%;height:100%;background-color:whitesmoke"></canvas>
+    <view class="bottom-bar">
+        <view class="cell">
+            <label>线宽</label>
+            <slider style="width:70%" bindchange="widthChange" step="1" max="5" min="1" show-value />
+        </view>
+        <view class="cell">
+            <label>样式</label>
+            <radio-group bindchange="modeChange">
+                <label wx:for="{{lineMode}}" wx:for-item="item" wx:key="{{item.id}}">
+                    <radio value="{{item.value}}" checked="{{item.checked}}" />
+                    {{item.name}}
+                </label>
+            </radio-group>
+        </view>
+        <view class="cell">
+            <label>样式2</label>
+            <radio-group bindchange="dashChange">
+                <label wx:for="{{dash}}" wx:for-item="item" wx:key="{{item.id}}">
+                    <radio value="{{item.value}}" checked="{{item.checked}}" />
+                    {{item.name}}
+                </label>
+            </radio-group>
+        </view>
+        <!-- <view class="cell">
+            <label>线端</label>
+            <radio-group bindchange="capChange">
+                <label wx:for="{{cap}}" wx:for-item="item" wx:key="{{item.id}}">
+                    <radio value="{{item.value}}" checked="{{item.checked}}" />
+                    {{item.name}}
+                </label>
+            </radio-group>
+        </view> -->
+        <view class="cell">
+            <label>接头</label>
+            <radio-group bindchange="joinChange">
+                <label wx:for="{{join}}" wx:for-item="item" wx:key="{{item.id}}">
+                    <radio value="{{item.value}}" checked="{{item.checked}}" />
+                    {{item.name}}
+                </label>
+            </radio-group>
+        </view>
+        <button size="mini" class="button-font" bindtap="moveLine">移动线</button>
+    </view>
+    <!-- <view class="bottom-bar">
+        <view class="bottom-bar-content">
+            <button size="mini" class="button-font" bindtap="randomRectangle">随机矩形</button>
+            <button size="mini" class="button-font" bindtap="moveLine">移动线</button>
+            <button size="mini" class="button-font">随机多边形</button>
+        </view>
+    </view> -->
+</view>

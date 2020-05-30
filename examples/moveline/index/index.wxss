@@ -1,0 +1,47 @@
+.bottom-bar{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding:5px;
+  margin-top:10px;
+  box-sizing: border-box;
+}
+.cell{
+  width:100%;
+  padding: 10px 0px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.main{
+  height:100vh;
+  width:100vw;
+  padding:10px;
+  box-sizing: border-box;
+  display:flex;
+  flex-direction: column;
+}
+
+.bottom-bar-content{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-font{
+  font-size:14;
+  font-weight: normal;
+}
+
+.canvas{
+  width:100%;
+  height:90vh;
+}
+

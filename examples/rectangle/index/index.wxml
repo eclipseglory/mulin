@@ -1,0 +1,17 @@
+<view class="intro">
+    <view class="canvas-container">
+        <canvas id="canvas" type="2d" class="canvas" />
+    </view>
+    <view class="row">
+        <button bindtap="randomColor">随机颜色</button>
+        <button bindtap="randomBorderColor">随机边框颜色</button>
+    </view>
+    <view class="row">
+        <label>边框宽</label>
+        <slider bindchange="borderWidthChange" min="0" max="10" style="width:60%" show-value="{{true}}"></slider>
+    </view>
+    <view class="row">
+        <label>圆角</label>
+        <slider bindchange="radiusChange" min="0" max="10" style="width:60%" show-value="{{true}}"></slider>
+    </view>
+</view>

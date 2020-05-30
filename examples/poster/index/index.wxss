@@ -1,0 +1,23 @@
+.intro {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width:100vw;
+  height:100vh;
+}
+
+.mask{
+  z-index: 2;
+  background-color:rgba(33, 33, 33, 0.5);
+  width:100vw;
+  height:100vh;
+  position: absolute;
+}
+
+.image-container{
+  display:flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
