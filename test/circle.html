@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>圆形测试1</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+    <canvas id="canvas" style="background-color:whitesmoke;width:500px;height:500px"></canvas>
+    <input id="input" type="file"></input>
+    <button id="b">开始动画</button>
+    <button id="b1">停止动画</button>
+    <button id="b2">暂停动画</button>
+</body>
+
+<script type="module">
+    import Graph from '../src/graph/graph.js';
+    import Circle from '../src/graph/shapes/circle.js';
+    import FillStyle from '../src/graph/shapes/fill-style.js';
+    import StrokeStyle from '../src/graph/shapes/stroke-style.js';
+    import Container from '../src/graph/container.js';
+    import utils from '../src/graph/utils.js';
+    import FlareJSONReader from '../src/graph/flare-json-reader.js';
+    import BezierEasing from '../src/graph/math/bezier-easing.js';
+
+    let node = document.getElementById('input');
+    let button = document.getElementById('b');
+    let button1 = document.getElementById('b1');
+    let button2 = document.getElementById('b2');
+    let canvas = document.getElementById('canvas');
+    let graph = new Graph(canvas);
+    node.addEventListener('input', function (e) {
+        let target = e.target;
+        console.log(target.files);
+        var reader = new FileReader();
+        let result = '';
+        reader.onload = function (e) {
+            result += e.target.result;
+        };
+        reader.onloadend = function () {
+            fileReady(result);
+        }
+        reader.readAsText(target.files[0]);
+    });
+
+    button.addEventListener('click', function (e) {
+        let container = graph.children[0];
+        let animation = container.animations[0];
+        if (animation) {
+            animation.start().then(() => {
+                console.log('动画结束');
+            }).catch(err => {
+                console.error(err);
+            });
+        }
+    });
+
+    button1.addEventListener('click', function (e) {
+        let container = graph.children[0];
+        let animation = container.animations[0];
+        if (animation) {
+            animation.cancel();
+        }
+    });
+
+    button2.addEventListener('click', function (e) {
+        let container = graph.children[0];
+        let animation = container.animations[0];
+        if (animation) {
+            animation.pause();
+        }
+    });
+
+
+    function fileReady(content) {
+        let containers = FlareJSONReader.read(content);
+        let container = containers[0];
+        let animation = container.animations[0];
+        graph.addChild(container);
+        graph.update();
+    }
+
+
+    // let circle = new Circle({
+    //     x: 50, y: 50,
+    //     radius: 100,
+    //     fillStyle: new FillStyle({
+    //         color: 'red'
+    //     }),
+    //     strokeStyle: new StrokeStyle({
+    //         color: 'black',
+    //         width: 10,
+    //         offset: 0.2,
+    //         end: 0.2,
+    //         start: 0.4,
+    //         cap: 'round'
+    //     })
+    // });
+    // graph.addChild(circle);
+    // console.log(circle.getShapeLength(), Math.PI * 2 * circle.radius);
+    // graph.update();
+    // graph.startRAF({
+    //     afterDraw() {
+    //         // circle.strokeStyle.offset += 0.01;
+    //         // if (circle.strokeStyle.offset >= 1) circle.strokeStyle.offset = 1
+    //     }
+    // })
+</script>
+
+</html>
