@@ -3,16 +3,33 @@ import Matrix3 from "./math/matrix3.js";
 const PI_DIV_180 = Math.PI / 180;
 
 export default class Transformable {
-    constructor(props = { x: 0, y: 0, scaleX: 0, scaleY: 0, rotation: 0, anchorX: 0, anchorY: 0, width: 0, height: 0 }) {
+    constructor(props = {}) {
         this._x = props.x;
+        if (this._x == null) this._x = 0;
+
         this._y = props.y;
+        if (this._y == null) this._y = 0;
+
         this._scaleX = props.scaleX;
+        if (this._scaleX == null) this._scaleX = 1;
+
         this._scaleY = props.scaleY;
+        if (this._scaleY == null) this._scaleY = 1;
+
         this._anchorX = props.anchorX;
+        if (this._anchorX == null) this._anchorX = 0;
+
         this._anchorY = props.anchorY;
+        if (this._anchorY == null) this._anchorY = 0;
+
         this._rotation = props.rotation;
+        if (this._rotation == null) this._rotation = 0;
+
         this._width = props.width;
+        if (this._width == null) this._width = 0;
+
         this._height = props.height;
+        if (this._height == null) this._height = 0;
 
         this._matrix = new Matrix3();
 

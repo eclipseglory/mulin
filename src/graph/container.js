@@ -12,13 +12,15 @@ export default class Container extends Figure {
         a.parent = this;
     }
 
-    _applyCurrentDrawingStates(ctx) {
-        super._applyCurrentDrawingStates(ctx);
+    applyDrawingStates(ctx) {
+        super.applyDrawingStates(ctx);
         ctx.fillStyle = this.color;
     }
 
-    _drawSelf(ctx, w, h) {
+    drawSelf(ctx, w, h) {
+        ctx.beginPath();
         ctx.rect(0, 0, w, h);
+        ctx.closePath();
         ctx.fill();
     }
 }

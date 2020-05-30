@@ -19,8 +19,8 @@ export default class Graph extends Figure {
 
         // graph节点的高度和宽度不能根据pixelRatio调整
         // 调整canvas在内存的实际大小
-        canvas.width = Figure.DRP * this.width;
-        canvas.height = Figure.DRP * this.height;
+        canvas.width = utils.DRP * this.width;
+        canvas.height = utils.DRP * this.height;
         if (window) {
             // 如果是在浏览器端
             canvas.style.width = this.width + 'px';
@@ -31,7 +31,7 @@ export default class Graph extends Figure {
         this.canvas = canvas;
         // 伸缩自身，因为canvas内存大小都变了
         // 不用自己的scale是因为那个是基于中心拉伸的，直接让ctx的transform matrix拉伸即可
-        this.ctx.scale(Figure.DRP, Figure.DRP);
+        this.ctx.scale(utils.DRP, utils.DRP);
         this._rafId, this._rafUpdateId;
     }
 
