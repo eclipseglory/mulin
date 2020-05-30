@@ -10,7 +10,7 @@ export default class Circle extends Shape {
         this._circlePath.height = this._circlePath.width;
         this._angle = params['angle'] == null ? 360 : params['angle'];
         this._center;
-        this._paths.push(this._circlePath);
+        this.addPath(this._circlePath);
     }
     // 不允许再设置宽度和高度，统一设置半径
     set width(v) {
@@ -42,10 +42,6 @@ export default class Circle extends Shape {
         }
     }
 
-    get contentDirty() {
-        return this._circlePath.contentDirty;
-    }
-
     get radius() {
         return this._radius;
     }
@@ -67,16 +63,11 @@ export default class Circle extends Shape {
         return this._center;
     }
 
-    // _createShapePath(ctx, w, h) {
-    //     ctx.beginPath();
-    //     let r = this.radius;
-    //     if (Math.abs(this._angle) >= 360)
-    //         ctx.arc(r, r, this.radius, 0, Math.PI * 2);
-    //     else {
-    //         ctx.moveTo(r, r);
-    //         let anclock = this.angle < 0;
-    //         ctx.arc(r, r, this.radius, 0, this._angle * Figure.PIDIV180, anclock);
-    //     }
-    //     ctx.closePath();
-    // }
+    canDraw() {
+        return super.canDraw();
+    }
+
+    draw(ctx) {
+        super.draw(ctx);
+    }
 }

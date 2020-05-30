@@ -1,29 +1,58 @@
-import Figure from "../figure.js";
+import Drawable from "../drawable.js";
 import utils from "../utils.js";
 
 /**
  * 几回图形绘制基类
  */
-export default class Shape extends Figure {
-    constructor(params = {}) {
-        super(params);
-        this.fillStyle = params.fillStyle;
-        this.strokeStyle = params.strokeStyle;
-        // this.color = params['color'] == null ? '#000000' : params['color'];
-        // this.borderColor = params['borderColor']; //默认不绘制border
-        // this.borderWidth = params['borderWidth'] == null ? 0 : params['borderWidth']; // ctx默认的线宽度是1，不能改小
-        // this.borderStyle = params['borderWidth'] == null ? 'solid' : params['borderWidth'];
+export default class Shape extends Drawable {
+    constructor(props = {}) {
+        super(props);
+        this.fillStyles = [];
+        this.strokeStyles = [];
+        // this.fillStyle = props.fillStyle;
+        // this.strokeStyle = props.strokeStyle;
 
+        this._path2d;
         this._paths = [];
-        this._path2D = null;
+    }
+
+    //// 属性 ////
+
+    get shapePath() {
+        return this._path2d;
+    }
+
+    /// 方法 ////
+
+    addFillStyle(style) {
+        this.fillStyles.push(style);
+    }
+
+    addStrokeStyle(style) {
+        this.strokeStyles.push(style);
     }
 
     getShapeLength() {
-        let l = 0;
+        let sum = 0;
         this._paths.forEach(path => {
-            l += path.pathLength;
-        })
-        return l;
+            sum += path.length;
+        });
+        return sum;
+    }
+
+    isDirty() {
+        for (let index = 0; index < this._paths.length; index++) {
+            const path = this._paths[index];
+            if (path.isDirty()) return true;
+        }
+        return false;
+    }
+
+    saveDirty() {
+        for (let index = 0; index < this._paths.length; index++) {
+            const path = this._paths[index];
+            path.saveDirty();
+        }
     }
 
     addPath(path) {
@@ -41,50 +70,52 @@ export default class Shape extends Figure {
     }
 
     canDraw() {
-        return (this.fillStyle != null || this.strokeStyle != null)
-            && this._paths.length != 0 && this.opacity != 0
-            && !this.hidden;
+        return (this.fillStyles.length != 0 || this.strokeStyles.length != 0)
+            && this._paths.length != 0 && super.canDraw();
     }
 
-    _drawSelf(ctx, w, h) {
-        if (this._contentDirty) {
-            // 真机上不允许createPath2D参数为null
-            this._path2D = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
-            if (this._path2D && this._path2D.beginPath == null) {
-                this._path2D = null;
-                //真机上path2d创建出来是一个object，根本不能用
+    drawSelf(ctx, w, h) {
+        if (this.isDirty()) {
+            if (this._path2d == null) {
+                this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
+                if (this._path2d && this._path2d.beginPath == null) {
+                    this._path2d = null;
+                    //真机上path2d创建出来是一个object，根本不能用
+                }
             }
-            if (this._path2D != null) {
-                this._paths.forEach(path => {
-                    let p = path.createPath(ctx);
-                    let matrix = path._calculateTransformMatrix();
-                    this._path2D.addPath(p, matrix.toSVGMatrix());
-                });
+            if (this._path2d != null) {
+                this.createSubPath2D(ctx);
+                this.saveDirty();
             }
-        }
-        if (this._path2D == null) {
-            ctx.beginPath();
-            this._paths.forEach(path => {
-                ctx.save();
-                path._applyCurrentTransform(ctx);
-                path.createPath(ctx);
-                ctx.restore();
-            });
-        } else {
         }
 
-        if (this._clip) {
-            if (this._path2D != null) {
-                ctx.clip(this.path2D);
-            } else {
-                ctx.clip();
-            }
+        if (this._path2d == null) {
+            // 没有path就硬画
+            ctx.beginPath();
+            this._paths.forEach(p => {
+                ctx.save();
+                let matrix = p.getTransformMatrix();
+                let data = matrix.data;
+                ctx.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
+                p.createPath(ctx, p.width, p.height);
+                ctx.restore();
+            });
         }
-        if (this.fillStyle) {
-            this.fillStyle.paint(ctx, this._path2D);
+
+        this.fillStyles.forEach(fillStyle => {
+            fillStyle.paint(ctx, this._path2d);
+        });
+        if (this.strokeStyles.length > 0) {
+            let length = this.getShapeLength();
+            this.strokeStyles.forEach(strokeStyle => {
+                strokeStyle.paint(ctx, this._path2d, length);
+            })
         }
-        if (this.strokeStyle) {
-            this.strokeStyle.paint(ctx, this._path2D, this.getShapeLength());
-        }
+    }
+
+    createSubPath2D(ctx) {
+        this._paths.forEach(p => {
+            this._path2d.addPath(p.getPath2D(ctx), p.getTransformMatrix().toSVGMatrix());
+        });
     }
 }

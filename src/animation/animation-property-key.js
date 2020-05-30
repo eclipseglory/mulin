@@ -1,4 +1,4 @@
-import BezierEasing from "../graph/math/bezier-easing.js";
+import BezierEasing from '../graph/math/bezier-easing.js';
 
 export default class AnimationPropertyKey {
     constructor(props = {}) {
