@@ -1,89 +1,18 @@
 import Matrix3 from "./math/matrix3.js";
 import utils from "./utils.js";
-import Transformable from "./transformable.js";
+import Drawable from "./drawable.js";
 
 
 /**
  * 绘制基类，定义了一些图形的基本属性，例如左上角坐标以及图形大小
  * 在绘制的时候采用迭代绘制子节点的方式
  */
-export default class Figure extends Transformable {
+export default class Figure extends Drawable {
 
     constructor(params = { anchorX: 0.5, anchorY: 0.5 }) {
         super(params);
-        this.name = params.name;
-        this.id = params.id;
-        this.blendMode = params.blendMode || 'source-over';
-        this.opacity = params['opacity'] == null ? 1 : params['opacity'];
-        this._hidden = params['hidden'] == null ? false : params['hidden'];
-        this._clip = params['clip'] == null ? false : params['clip'];
-
-        this._children = [];
-        this._contentDirty = true;
-        this._parent;
     }
 
-    get contentDirty() { return this._contentDirty; }
-
-    get clip() { return this._clip; }
-    set clip(c) { this._clip = c; };
-
-
-    static get DRP() { return utils.DRP; };
-
-    set hidden(v) {
-        this._hidden = v;
-    }
-
-    get hidden() {
-        return this._hidden;
-    }
-
-    get width() {
-        return super.width;
-    }
-
-    set width(v) {
-        if (this.width != v) {
-            super.width = v;
-            this.fireContentDirty()
-        }
-    }
-
-    get height() {
-        return super.height;
-    }
-
-    set height(v) {
-        if (this.height != v) {
-            super.height = v;
-            this.fireContentDirty()
-        }
-    }
-
-    get left() {
-        return this.x;
-    }
-    /**
-     * Figure位于父节点的左上角y值
-     */
-    get top() {
-        return this.y;
-    }
-    /**
-     * Figure位于父节点的右上角x值
-     */
-    get right() {
-        return this.x + this.width;
-    }
-    /**
-     * Figure位于父节点的右下角y值
-     */
-    get bottom() {
-        return this.y + this.height;
-    }
-
-    get children() { return this._children };
 
     /**
      * 设置节点的的中心位置位于某个节点的中心 
@@ -98,97 +27,10 @@ export default class Figure extends Transformable {
     }
 
     /**
-     * 添加一个绘制子节点。如果子节点已经添加到某节点下，该方法会抛出异常
-     * @param {Figure} child 
-     */
-    addChild(child) {
-        if (child._parent != null) {
-            throw new Error('子节点不能同时挂在多个父节点下,请先将该子节点从原父节点移除后再添加');
-        }
-        this._children.push(child);
-        child._parent = this;
-    }
-    /**
-     * 删除一个子节点
-     * @param {Figure} child 
-     */
-    removeChild(child) {
-        this.removeChildAt(this._children.indexOf(child));
-    }
-
-    /**
-     * 删除对应位置的子节点
-     * @param {Number} index 
-     */
-    removeChildAt(index) {
-        if (index < 0 || index > this._children.length - 1) return;
-        let c = this._children.splice(index, 1);
-        if (c != null && c.length == 1) {
-            c[0]._parent = null;
-        }
-    }
-
-    /**
-     * 绘制Figure自身,需要继承类复写。
-     * 所有Figure绘制都是从{0,0}点开始的，切勿使用自身的x和y，否则绘制结果会出问题
-     * @param {CanvasRenderingContext2D} context 
-     * @param {Number} width Figure绘制区域宽度
-     * @param {Number} height Figure绘制区域高度
-     */
-    _drawSelf(context, width, height) {
-    }
-
-    /**
-     * 绘制Figure的子节点
-     * @param {CanvasRenderingContext2D} context 
-     */
-    _drawChildren(context) {
-        this._children.forEach(child => child.draw(context));
-    }
-
-    /**
      * Figure是否可以绘制
      */
     canDraw() {
-        return this.width != 0 && this.height != 0 && this.opacity != 0
-            && !this.hidden;
-    }
-
-    /**
-     * 绘制整个Figure
-     * @param {CanvasRenderingContext2D} context 
-     */
-    draw(context) {
-        if (!this.canDraw()) return;
-        context.save();
-        this._applyCurrentTransform(context);
-        this._applyCurrentDrawingStates(context);
-        this._drawSelf(context, this.width, this.height);
-        this._drawChildren(context);
-        context.restore();
-    }
-
-    /**
-     * 设置当前Figure的绘制状态，例如透明度、填充色等
-     */
-    _applyCurrentDrawingStates(context) {
-        context.globalAlpha = this.opacity;
-        context.globalCompositeOperation = this.blendMode;
-    }
-
-    /**
-     * 应用当前Figure的矩阵变换。
-     * @param {CanvasRenderingContext2D} context 
-     */
-    _applyCurrentTransform(context) {
-        let matrix = this.getTransformMatrix();
-        let data = matrix.data;
-        // 这里注意，CanvasRenderingContext2D的参数（a,b,c,d,e,f）的transform数据对应矩阵和我自己的只有6个数的3x3矩阵：
-        // a,c,e    a0 a1 a2
-        // b,d,f => a3 a4 a5
-        // 0,0,1    0  0  1
-        // 所以我要给的参数是：(a0,a3,a1,a4,a2,a5)
-        context.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
+        return this.width != 0 && this.height != 0 && super.canDraw();
     }
 
     /**
@@ -200,14 +42,6 @@ export default class Figure extends Transformable {
             p = p._parent;
         }
         return p;
-    }
-
-    fireContentDirty() {
-        this._contentDirty = true;
-    }
-
-    saveContentDirty() {
-        this._contentDirty = false;
     }
 
     /**
