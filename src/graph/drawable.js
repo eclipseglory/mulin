@@ -1,8 +1,9 @@
 import Transformable from "./transformable.js";
 
 export default class Drawable extends Transformable {
-    constructor(props) {
+    constructor(props = {}) {
         super(props);
+        this.drawOrder = props.drawOrder;
         this.name = props.name;
         this.id = props.id;
         this.blendMode = props.blendMode || 'source-over';
@@ -57,7 +58,7 @@ export default class Drawable extends Transformable {
      * 是否可以绘制
      */
     canDraw() {
-        return this.opacity != 0 && this.visible;
+        return this.opacity != 0 && this.visible && this.scaleX != 0 && this.scaleY != 0;
     }
 
     applyDrawingStates(context) {
