@@ -33,6 +33,18 @@ export default class Path extends Transformable {
         }
     }
 
+    set pathVertices(vertices) {
+        for (let index = 0, offset = 0; index < this._points.length; index++) {
+            const point = this._points[index];
+            point.setVertices(vertices, offset);
+            if (point.type == 0) {
+                offset += 3;
+            } else {
+                offset += 6;
+            }
+        }
+    }
+
     //// 方法 ///////
 
     addPoint(p) {
@@ -40,8 +52,7 @@ export default class Path extends Transformable {
         if (p._parent != null) throw '该点已经添加到其他线上，请先用它之前线删除它';
         this._points.push(p);
         p._parent = this;
-        this._dirty = true;
-        this._length = null;
+        this.fireDirty();
     }
 
     removePointAt(index) {
@@ -49,10 +60,10 @@ export default class Path extends Transformable {
         let p = this._points[index];
         p._parent = null;
         this._points.splice(index, 1);
+
         let di = this._dirtyPoints.indexOf(p);
         if (di != -1) this._dirtyPoints.splice(di, 1);
-        this._dirty = true;
-        this._length = null;
+        this.fireDirty();
     }
 
     removePoint(p) {
@@ -63,11 +74,16 @@ export default class Path extends Transformable {
         return this._dirty || this._dirtyPoints.length != 0;
     }
 
+    fireDirty() {
+        this._dirty = true;
+        this._length = null;
+    }
+
     firePointDirty(p) {
         let index = this._dirtyPoints.indexOf(p);
         if (index == -1) {
             this._dirtyPoints.push(p);
-            this._length = null;
+            this.fireDirty();
         }
     }
 
@@ -81,12 +97,10 @@ export default class Path extends Transformable {
 
     getPath2D(ctx) {
         if (this.isDirty()) {
-            if (this._path2d == null) {
-                this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
-                if (this._path2d && this._path2d.closePath == null) {
-                    this._path2d = null;
-                    //真机上path2d创建出来是一个object，根本不能用
-                }
+            this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
+            if (this._path2d && this._path2d.closePath == null) {
+                this._path2d = null;
+                //真机上path2d创建出来是一个object，根本不能用
             }
             if (this._path2d != null) {
                 this.createPath(this._path2d, this.width, this.height);

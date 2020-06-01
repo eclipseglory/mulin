@@ -76,12 +76,11 @@ export default class Shape extends Drawable {
 
     drawSelf(ctx, w, h) {
         if (this.isDirty()) {
-            if (this._path2d == null) {
-                this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
-                if (this._path2d && this._path2d.closePath == null) {
-                    this._path2d = null;
-                    //真机上path2d创建出来是一个object，根本不能用
-                }
+            // 这些操作全是因为微信没有path2d造成的
+            this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
+            if (this._path2d && this._path2d.closePath == null) {
+                this._path2d = null;
+                //真机上path2d创建出来是一个object，根本不能用
             }
             if (this._path2d != null) {
                 this.createSubPath2D(ctx);
