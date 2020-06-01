@@ -95,20 +95,43 @@ export default class AnimationPropertyKey {
         }
         if (this.currentKey.timingFunctionType == 1) {
             //第2个类型是Linear
-            let delta = this.currentKey.delta;
-            if (delta == null) {
-                delta = ((this.nextKey.value - this.currentKey.value) / (this.nextKey.time - this.currentKey.time));
-                this.currentKey.delta = delta;
-            }
             let c = currentPercent - this.currentKey.time;
-            return this.currentKey.value + c * delta;
+            // 允许Array类型
+            if (this.currentKey.value instanceof Array) {
+                let currentValue = new Array(this.currentKey.value.length);
+                for (let i = 0; i < currentValue.length; i++) {
+                    let deltas = this.currentKey.deltas;
+                    if (deltas == null) {
+                        deltas = new Array(currentValue.length);
+                        this.currentKey.deltas = deltas;
+                    }
+                    deltas[i] = ((this.nextKey.value[i] - this.currentKey.value[i]) / (this.nextKey.time - this.currentKey.time));
+                    currentValue[i] = this.currentKey.value[i] + c * deltas[i];
+                }
+                return currentValue;
+            } else {
+                let delta = this.currentKey.delta;
+                if (delta == null) {
+                    delta = ((this.nextKey.value - this.currentKey.value) / (this.nextKey.time - this.currentKey.time));
+                    this.currentKey.delta = delta;
+                }
+                return this.currentKey.value + c * delta;
+            }
         }
         if (this.currentKey.timingFunctionType == 2) {
             let bezierEasing = this.currentKey.bezierEasing;
             if (bezierEasing) {
                 let t = (currentPercent - this.currentKey.time) / (this.nextKey.time - this.currentKey.time);
                 let y = bezierEasing.easing(t);
-                return this.currentKey.value + y * (this.nextKey.value - this.currentKey.value);
+                if (this.currentKey.value instanceof Array) {
+                    let currentValue = new Array(this.currentKey.value.length);
+                    for (let i = 0; i < currentValue.length; i++) {
+                        currentValue[i] = this.currentKey.value[i] + y * (this.nextKey.value[i] - this.currentKey.value[i]);
+                    }
+                    return currentValue;
+                } else {
+                    return this.currentKey.value + y * (this.nextKey.value - this.currentKey.value);
+                }
             }
         }
         return this.figure[this.property];
