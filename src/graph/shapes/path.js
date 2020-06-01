@@ -83,7 +83,7 @@ export default class Path extends Transformable {
         if (this.isDirty()) {
             if (this._path2d == null) {
                 this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
-                if (this._path2d && this._path2d.beginPath == null) {
+                if (this._path2d && this._path2d.closePath == null) {
                     this._path2d = null;
                     //真机上path2d创建出来是一个object，根本不能用
                 }
