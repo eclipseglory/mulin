@@ -20,13 +20,18 @@ export default class Color {
 
     set color(array) {
         if (array instanceof Array) {
-            this.r = array[0];
-            this.g = array[1];
-            this.b = array[2];
-            if (array.length == 4) {
-                this.a = array[3];
-            }
+            this.setColor(array, 0, array.length == 4);
         }
+    }
+
+    setColor(array, offset, includeAlpha) {
+        this.r = array[offset];
+        this.g = array[offset + 1];
+        this.b = array[offset + 2];
+        if (includeAlpha) {
+            this.a = array[offset + 3];
+        }
+        return this._colorString == null;
     }
 
     get color() {

@@ -82,7 +82,7 @@ export default class FlareJSONReader {
                 } else {
                     if (figure) {
                         let propertyName = this.getPropertyName(p);
-                        if (propertyName) {
+                        if (propertyName && propertyName in figure) {
                             let array = key[p];
                             let propertyAnimation = new AnimationPropertyKey({
                                 duration: animation.duration, // 这个duration其实是为了计算一个比例，并非真正的运行时间

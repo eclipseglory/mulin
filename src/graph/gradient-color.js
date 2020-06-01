@@ -69,8 +69,6 @@ export default class GradientColor {
 
     // get end() { return this._end; }
 
-    get values() { return this._values; }
-
     set values(array) {
         if (array instanceof Array) {
             let stopOffset = this.colorStopValuesOffset;
@@ -102,25 +100,11 @@ export default class GradientColor {
                     let offset = stop[0];
                     let color = stop[1];
                     let r = array[index];
+                    if (color.setColor(array, index, true)) {
+                        this._gradient = null;
+                    }
                     if (array[index + 4] != offset) {
                         stop[0] = offset;
-                        this._gradient = null;
-                    }
-                    if (this._changeColorValue(r, color, 'r')) {
-                        this._gradient = null;
-                    }
-                    r = array[index + 1];
-                    if (this._changeColorValue(r, color, 'g')) {
-                        this._gradient = null;
-                    }
-
-                    r = array[index + 2];
-                    if (this._changeColorValue(r, color, 'b')) {
-                        this._gradient = null;
-                    }
-
-                    r = array[index + 3];
-                    if (this._changeColorValue(r, color, 'a')) {
                         this._gradient = null;
                     }
                 }
@@ -133,16 +117,5 @@ export default class GradientColor {
 
     get values() {
         return this._values;
-    }
-
-    _changeColorValue(v, color, prop) {
-        if (v >= 0 && v <= 1 && prop != 'a') {
-            v = Math.floor(255 * v);
-        }
-        if (color[prop] != v) {
-            color[prop] = v;
-            return true;
-        }
-        return false;
     }
 }
