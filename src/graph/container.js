@@ -1,9 +1,10 @@
 import Figure from "./figure.js";
+import Color from "./color.js";
 
 export default class Container extends Figure {
     constructor(props = {}) {
         super(props);
-        this.color = props.color || '#333333';
+        this.color = new Color(props.color);
         this.animations = [];
     }
 
@@ -14,7 +15,7 @@ export default class Container extends Figure {
 
     applyDrawingStates(ctx) {
         super.applyDrawingStates(ctx);
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.color.color;
     }
 
     drawSelf(ctx, w, h) {

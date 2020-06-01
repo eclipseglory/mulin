@@ -23,13 +23,30 @@ export default class StrokeStyle extends BaseStyle {
         if (this.width == null) this.width = 0;
     }
 
+    get strokeColor() {
+        return this.color;
+    }
+
+    set strokeColor(value) {
+        this.color = value;
+    }
+
     canDraw() {
         return super.canDraw() && (this.end - this.start != 0);// && this.offset < 1 && (this.end - this.start != 0);
     }
 
     _applyStyle(ctx, length) {
         super._applyStyle(ctx);
-        ctx.strokeStyle = this.color;
+        if (this.color != null) {
+            ctx.strokeStyle = this.strokeColor.color;
+            if (ctx.strokeStyle == '#000000') {
+                console.log(ctx.strokeStyle);
+            }
+        } else {
+            if (this.gradientColor != null) {
+                ctx.strokeStyle = this.gradientColor.getGradient(ctx);
+            }
+        }
         ctx.lineWidth = this.width;
         ctx.lineJoin = JOIN[this.join];
         ctx.lineCap = CAP[this.cap];
