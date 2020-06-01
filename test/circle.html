@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <canvas id="canvas" style="background-color:whitesmoke;width:500px;height:500px"></canvas>
+    <canvas id="canvas" style="background-color:#333333;width:500px;height:500px"></canvas>
     <input id="input" type="file"></input>
     <button id="b">开始动画</button>
     <button id="b1">停止动画</button>
@@ -32,6 +32,8 @@
     let button2 = document.getElementById('b2');
     let canvas = document.getElementById('canvas');
     let graph = new Graph(canvas);
+
+
     node.addEventListener('input', function (e) {
         let target = e.target;
         console.log(target.files);

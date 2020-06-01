@@ -8,6 +8,9 @@ import Animation from "../animation/animation.js";
 import AnimationPropertyKey from "../animation/animation-property-key.js";
 import Path from "./shapes/path.js";
 import Point from "./shapes/point.js";
+import Group from './group.js';
+import RadicalGradientColor from "./radical-gradient-color.js";
+import LinearGradientColor from "./linear-gradient-color.js";
 
 export default class FlareJSONReader {
     constructor() { }
@@ -26,15 +29,32 @@ export default class FlareJSONReader {
                     y: artboard.translation[1],
                     width: artboard.width,
                     height: artboard.height,
-                    color: utils.convertColorArrayToString(artboard.color),
+                    color: utils.converColorArray(artboard.color),
                     opacity: artboard.opacity
                 });
                 containers.push(container);
                 this.readNodes(artboard, container, tempstack);
+                this.sortDrawable(container);
                 this.readAnimations(artboard, container, tempstack);
             }
         });
         return containers;
+    }
+
+    static sortDrawable(parent) {
+        let children = parent._children;
+        if (children != null && children.length > 1) {
+            children.sort((a, b) => {
+                if (a.drawOrder != null && b.drawOrder != null) {
+                    return a.drawOrder - b.drawOrder;
+                }
+                return 0;
+            })
+
+            children.forEach(child => {
+                this.sortDrawable(child);
+            })
+        }
     }
 
     static getPropertyName(p) {
@@ -50,8 +70,7 @@ export default class FlareJSONReader {
         if (p == 'strokeOffset') {
             return 'offset';
         }
-
-        if (p == 'scaleX') return 'scaleX';
+        return p;
     }
 
     static readKeyed(keyed, animation, tempstack) {
@@ -110,8 +129,12 @@ export default class FlareJSONReader {
         let nodes = artboard.nodes;
         for (let i = 0; i < nodes.length; i++) {
             let node = nodes[i];
-            if (node.type == 'shape') {
-                let shape = new Shape({
+            if (node.drawOrder != null) {
+                console.log(node.name, node.drawOrder);
+            }
+            if (node.type == 'node') {
+                let group = new Group({
+                    drawOrder: node.drawOrder,
                     x: node.translation[0],
                     y: node.translation[1],
                     id: i,
@@ -121,9 +144,39 @@ export default class FlareJSONReader {
                     scaleY: node.scale[1],
                     opacity: node.opacity
                 });
-                if (node.parent == null) {
-                    container.addChild(shape);
+                let parent = container;
+                if (node.parent != null) {
+                    parent = tempstack[node.parent];
                 }
+                parent.addChild(group);
+                if (parent.drawOrder == null) {
+                    parent.drawOrder = group.drawOrder;
+                }
+                parent.drawOrder = Math.max(group.drawOrder, parent.drawOrder);
+                tempstack[i] = group;
+            }
+            if (node.type == 'shape') {
+                let shape = new Shape({
+                    drawOrder: node.drawOrder,
+                    x: node.translation[0],
+                    y: node.translation[1],
+                    id: i,
+                    name: node.name,
+                    rotate: node.ratation,
+                    scaleX: node.scale[0],
+                    scaleY: node.scale[1],
+                    opacity: node.opacity,
+                    visible: node.isVisible
+                });
+                let parent = container;
+                if (node.parent != null) {
+                    parent = tempstack[node.parent];
+                }
+                if (parent.drawOrder == null) {
+                    parent.drawOrder = shape.drawOrder;
+                }
+                parent.drawOrder = Math.max(shape.drawOrder, parent.drawOrder);
+                parent.addChild(shape);
                 tempstack[i] = shape;
             }
 
@@ -131,6 +184,7 @@ export default class FlareJSONReader {
                 let parent = tempstack[node.parent];
                 // ellipse的translation是以中心开始的，这里要转一下：
                 let path = new CirclePath({
+                    drawOrder: node.drawOrder,
                     x: node.translation[0] - node.width / 2,
                     y: node.translation[1] - node.height / 2,
                     width: node.width,
@@ -176,7 +230,7 @@ export default class FlareJSONReader {
                     start: node.start,
                     end: node.end,
                     offset: node.offset,
-                    color: utils.convertColorArrayToString(node.color),
+                    color: utils.converColorArray(node.color),
                     name: node.name,
                     id: i
                 });
@@ -188,8 +242,41 @@ export default class FlareJSONReader {
                 let shape = tempstack[node.parent];
                 let fillStyle = new FillStyle({
                     opacity: node.opacity,
-                    color: utils.convertColorArrayToString(node.color),
+                    color: utils.converColorArray(node.color),
                     name: node.name,
+                    id: i,
+                    fillRule: node.fillRule,
+                });
+                tempstack[i] = fillStyle;
+                shape.addFillStyle(fillStyle);
+            }
+
+            if (node.type == 'gradientFill') {
+                let shape = tempstack[node.parent];
+                let values = [node.start[0], node.start[1], node.end[0], node.end[1]];
+                values = values.concat(node.colorStops);
+                let linearGradientColor = new LinearGradientColor(values);
+                let fillStyle = new FillStyle({
+                    gradientColor: linearGradientColor,
+                    opacity: node.opacity,
+                    name: node.name,
+                    id: i,
+                    fillRule: node.fillRule,
+                });
+                tempstack[i] = fillStyle;
+                shape.addFillStyle(fillStyle);
+            }
+
+            if (node.type == 'radialGradientFill') {
+                let shape = tempstack[node.parent];
+                let values = [node.secondaryRadiusScale, node.start[0], node.start[1], node.end[0], node.end[1]];
+                values = values.concat(node.colorStops);
+                let radicalGradientColor = new RadicalGradientColor(values);
+                let fillStyle = new FillStyle({
+                    gradientColor: radicalGradientColor,
+                    opacity: node.opacity,
+                    name: node.name,
+                    fillRule: node.fillRule,
                     id: i
                 });
                 tempstack[i] = fillStyle;

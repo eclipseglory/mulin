@@ -1,3 +1,5 @@
+import Color from "./color.js";
+
 const PI_DIV_180 = Math.PI / 180;
 const DRP = pixelRatio();
 
@@ -209,22 +211,30 @@ function createPath2D(canvas, path) {
     }
 }
 
-function convertColorArrayToString(color) {
+function converColorArray(color) {
     if (color.length == 3) {
-        return 'rgb(' + Math.floor(color[0] * 255) + ',' + Math.floor(color[1] * 255)
-            + ',' + Math.floor(color[2] * 255) + ')';
+        return [Math.floor(color[0] * 255), Math.floor(color[1] * 255), Math.floor(color[2] * 255)];
     }
     if (color.length == 4)
-        return 'rgba(' + Math.floor(color[0] * 255) + ',' + Math.floor(color[1] * 255)
-            + ',' + Math.floor(color[2] * 255) + ',' + color[3] + ')';
+        return [Math.floor(color[0] * 255), Math.floor(color[1] * 255), Math.floor(color[2] * 255), color[3]];
+}
+
+function createColorStops(array, length) {
+    let colorStops = [];
+    for (let i = 0; i < length * 5; i += 5) {
+        let color = new Color(converColorArray([array[i], array[i + 1], array[i + 2], array[i + 3]]));
+        colorStops.push([array[i + 4], color]);
+    }
+    return colorStops;
 }
 
 export default {
     PI_DIV_180: PI_DIV_180,
     DRP: DRP,
     isWX: isWX,
+    createColorStops: createColorStops,
     bezierLength: bezierLength,
-    convertColorArrayToString: convertColorArrayToString,
+    converColorArray: converColorArray,
     isPointInPolygon: isPointInPolygon,
     pixelRatio: pixelRatio,
     requestAnimationFrame: requestAnimationFrame,
