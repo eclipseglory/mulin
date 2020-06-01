@@ -11,6 +11,14 @@ export default class Matrix3 {
         this._array = array;
         this.identity();
     }
+    /**
+     * 是否是一个单位矩阵。
+     * 有时候判断这6个数比乘一次矩阵要快很多
+     */
+    isIdentity() {
+        let data = this._array;
+        return data[0] == 1 && data[1] == 0 && data[2] == 0 && data[3] == 0 && data[4] == 1 && data[5] == 0;
+    }
 
     /** 这个方法仅允许我使用 */
     static get TEMP() {
@@ -128,7 +136,9 @@ export default class Matrix3 {
         // let b10 = b[1], b11 = b[4];// b12 = b[5];
         // let b20 = b[2], b21 = b[5];// b22 = b[8];
     }
-
+    /**
+     * 有病
+     */
     toSVGMatrix() {
         let data = this.data;
         return { a: data[0], b: data[3], c: data[1], d: data[4], e: data[2], f: data[5] };

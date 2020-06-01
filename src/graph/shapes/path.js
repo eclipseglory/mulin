@@ -104,7 +104,6 @@ export default class Path extends Transformable {
             }
             if (this._path2d != null) {
                 this.createPath(this._path2d, this.width, this.height);
-                this.saveDirty();
             }
         }
         return this._path2d;
@@ -126,6 +125,7 @@ export default class Path extends Transformable {
             nextPoint = start;
             this._lineToNext(prePoint, nextPoint, ctx);
         }
+        this.saveDirty();
     }
 
     _lineToNext(prePoint, nextPoint, ctx) {

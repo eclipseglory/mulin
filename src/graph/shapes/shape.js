@@ -84,7 +84,6 @@ export default class Shape extends Drawable {
             }
             if (this._path2d != null) {
                 this.createSubPath2D(ctx);
-                this.saveDirty();
             }
         }
 
@@ -94,12 +93,17 @@ export default class Shape extends Drawable {
             this._paths.forEach(p => {
                 ctx.save();
                 let matrix = p.getTransformMatrix();
-                let data = matrix.data;
-                ctx.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
+                if (!matrix.isIdentity()) {
+                    let data = matrix.data;
+                    ctx.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
+                }
                 p.createPath(ctx, p.width, p.height);
                 ctx.restore();
             });
         }
+
+        // 不管是不直接硬画，都还是save一下
+        this.saveDirty();
 
         this.fillStyles.forEach(fillStyle => {
             fillStyle.paint(ctx, this._path2d);
@@ -114,7 +118,12 @@ export default class Shape extends Drawable {
 
     createSubPath2D(ctx) {
         this._paths.forEach(p => {
-            this._path2d.addPath(p.getPath2D(ctx), p.getTransformMatrix().toSVGMatrix());
+            let matrix = p.getTransformMatrix();
+            if (matrix.isIdentity()) {
+                this._path2d.addPath(p.getPath2D(ctx));
+            } else {
+                this._path2d.addPath(p.getPath2D(ctx), matrix.toSVGMatrix());
+            }
         });
     }
 }
