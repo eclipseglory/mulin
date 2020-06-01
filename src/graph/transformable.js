@@ -168,7 +168,7 @@ export default class Transformable {
             let tx = this.anchorX * this.width;
             let ty = this.anchorY * this.height;
             if (this.rotation !== 0) {
-                matrix.translate(tx, ty).rotate(this.rotation * PI_DIV_180).translate(-tx, -ty);
+                matrix.translate(tx, ty).rotate(this.rotation).translate(-tx, -ty);
             }
 
             if (this.scaleX !== 1 || this.scaleY !== 1) {
