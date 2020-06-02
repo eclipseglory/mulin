@@ -1,17 +1,15 @@
 import Figure from "./figure.js";
 import Color from "./color.js";
 
+/**
+ * 一个矩形的容器，能够绘制自身
+ */
 export default class Container extends Figure {
     constructor(props = {}) {
         super(props);
         this.color = new Color(props.color);
-        this.animations = [];
     }
 
-    addAnimation(a) {
-        this.animations.push(a);
-        a.parent = this;
-    }
 
     applyDrawingStates(ctx) {
         super.applyDrawingStates(ctx);

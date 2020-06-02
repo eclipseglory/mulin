@@ -69,6 +69,14 @@ export default class Matrix3 {
         return matrix;
     }
 
+    from(m) {
+        let data = this.data;
+        let from = m.data;
+        for (let i = 0; i < data.length; i++) {
+            data[i] = from[i];
+        }
+    }
+
     identity() {
         let out = this._array;
         out[0] = 1, out[1] = 0, out[2] = 0;

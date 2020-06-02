@@ -1,7 +1,6 @@
 
 export default class Animation {
     constructor(props = {}) {
-        this.parent = props.parent;
         this.duration = props.duration;
         if (this.duration == null) this.duration = 0;
         this.fps = props.fps;
@@ -15,7 +14,7 @@ export default class Animation {
         this.animationMap = {};
 
         this._running = false;
-
+        this.render = props.render;
         this.refreshCount = 0;
     }
 
@@ -23,17 +22,17 @@ export default class Animation {
         this.keyed.push(ani);
     }
 
-    start() {
-        if (!this.parent) return;
+    get isRunning() { return this._running; }
 
-        let graph = this.parent.getRoot();
-        if (!graph) return;
+    start() {
+        let render = this.render;
+        if (!render) return;
         if (this._running) return Promise.reject('已经开始运行了');
         let total = this.duration * this.fps / 1000;
         let keyed = this.keyed;
         let that = this;
         return new Promise((resolve, reject) => {
-            let start = graph.startRAF({
+            let start = render.startRAF({
                 beforeDraw() {
                     if (that.refreshCount > total) {
                         if (!that.isLooping) {
@@ -59,8 +58,8 @@ export default class Animation {
     }
 
     cancel(promiseCall) {
-        let graph = this.parent.getRoot();
-        graph.endRAF();
+        let render = this.render;
+        render.endRAF();
         this._running = false;
         this.refreshCount = 0;
         if (promiseCall)
@@ -73,6 +72,9 @@ export default class Animation {
         this.refreshCount = temp;
     }
 
+    /**
+     * @deprecated
+     */
     _resetKeyedFrames() {
         this.keyed.forEach(keyedFrame => {
             keyedFrame.reset();

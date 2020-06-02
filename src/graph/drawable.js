@@ -8,12 +8,9 @@ export default class Drawable extends Transformable {
         this.name = props.name;
         this.id = props.id;
         this.blendMode = props.blendMode || 'source-over';
-        this.opacity = props.opacity;
-        if (this.opacity == null) this.opacity = 1;
         this._visible = props.visible;
         if (this._visible == null) this.visible = true;
 
-        this._children = [];
         this.clips = props.clips;
     }
     /// 属性 ////
@@ -21,7 +18,6 @@ export default class Drawable extends Transformable {
 
     set visible(v) { this._visible = v; }
 
-    get children() { return this._children; }
 
     /// 方法////
 
@@ -30,43 +26,6 @@ export default class Drawable extends Transformable {
         this.clips.push({ shape: shape, intersect: intersect });
     }
 
-    forEachChild(process) {
-        this._children.forEach(child => {
-            process(child);
-        })
-    }
-
-    /**
-     * 添加一个绘制子节点。如果子节点已经添加到某节点下，该方法会抛出异常
-     * @param {Figure} child 
-     */
-    addChild(child) {
-        if (child.parent != null) {
-            throw new Error('子节点不能同时挂在多个父节点下,请先将该子节点从原父节点移除后再添加');
-        }
-        this._children.push(child);
-        child.parent = this;
-    }
-
-    /**
-     * 删除一个子节点
-     * @param {Figure} child 
-     */
-    removeChild(child) {
-        this.removeChildAt(this._children.indexOf(child));
-    }
-
-    /**
-     * 删除对应位置的子节点
-     * @param {Number} index 
-     */
-    removeChildAt(index) {
-        if (index < 0 || index > this._children.length - 1) return;
-        let c = this._children.splice(index, 1);
-        if (c != null && c.length == 1) {
-            c[0].parent = null;
-        }
-    }
     /**
      * 是否可以绘制
      */
@@ -75,49 +34,104 @@ export default class Drawable extends Transformable {
     }
 
     applyDrawingStates(context) {
-        context.globalAlpha *= this.opacity;
+        context.globalAlpha = this.opacity;
         context.globalCompositeOperation = this.blendMode;
     }
 
+    getClipRegion() {
+        // TODO 有个问题没实现：
+        // 在Canvas2d中，如果有多个Clips，只能剪切第一个，没剪切一次会替换上一次的剪切区域
+        // 所以这里只使用数组中最后一个剪切区域
+        // 但给出的剪切区域是多个，需要将多个图形作为一个剪切区域呢
+        let region;
+        if (this.clips) {
+            region = this.clips[this.clips.length - 1];
+        }
+        if (region) return region;
+
+        if (this._parent) {
+            region = this._parent.getClipRegion();
+        }
+        return region;
+    }
+
+    _clipRegion(ctx, region) {
+        let intersect = region.intersect;
+        let shape = region.shape;
+        if (shape.drawPaths == null) return;
+        let path = shape.getShapePath(ctx);
+        let m = shape.getWorldTransformMatrix();
+        if (m == null) {
+            return false;
+        }
+        if (path) {
+            ctx.setTransform(m.toSVGMatrix());
+            if (intersect) ctx.clip(path); else ctx.clip(path, 'evenodd');
+
+        } else {
+            ctx.beginPath();//清空之前的path栈
+            ctx.setTransform(m.toSVGMatrix());
+            shape.drawPaths(ctx, shape.width, shape.height);
+            ctx.closePath();
+            if (intersect) ctx.clip(); else ctx.clip('evenodd');
+        }
+        return true;
+    }
+
     clip(ctx) {
-        if (!this.clips) return;
-        // TODO 这里有个BUG，不知道怎么修复：
-        // 如果有多个Clips，只能剪切第一个，其他剪切完后会无法绘制图形,
-        // 在Flare的工具里也是这个效果
-        this.clips.forEach(shapeClip => {
-            let intersect = shapeClip.intersect;
-            let shape = shapeClip.shape;
-            if (shape.drawPaths == null) return;
-            let path = shape.getShapePath(ctx);
-            let m = shape.getWorldTransformMatrix();
-            if (path) {
-                ctx.save();
-                ctx.setTransform(m.toSVGMatrix());
-                if (intersect) ctx.clip(path); else ctx.clip(path, 'evenodd');
-                ctx.restore();
-
+        let region = this.getClipRegion();
+        let lastClipRegion = ctx.lastClipRegion;
+        if (region == null && lastClipRegion == null) {
+            return true;
+        }
+        if (region != null && lastClipRegion != null) {
+            if (region.shape == lastClipRegion.shape
+                && region.intersect == lastClipRegion.intersect) {
+                // 如果是相同的剪切区域和相同的剪切方式，则不再剪切
+                return true;
             } else {
-                ctx.beginPath();//清空之前的path栈
-                ctx.save();
-                ctx.setTransform(m.toSVGMatrix());
-                shape.drawPaths(ctx, shape.width, shape.height);
-                ctx.closePath();
                 ctx.restore();
-                if (intersect) ctx.clip(); else ctx.clip('evenodd');
+                ctx.save();
+                ctx.lastClipRegion = region;
+                return this._clipRegion(ctx, region);
             }
-        });
-
+        }
+        if (region == null || lastClipRegion == null) {
+            let r = region;
+            r = r || lastClipRegion;
+            ctx.lastClipRegion = r;
+            ctx.restore();
+            ctx.save();
+            return this._clipRegion(ctx, r);
+        }
+        return false;
     }
 
     draw(context) {
         if (!this.canDraw()) return;
-        context.save();
-        this.applyCurrentTransform(context);
-        this.applyDrawingStates(context);
-        this.clip(context);
-        this.drawSelf(context, this.width, this.height);
-        this.drawChildren(context);
-        context.restore();
+        if (this.name == 'star_fall_1') {
+            console.log();
+        }
+        // 剪切区域保存给兄弟节点,子节点会继承剪切区域，并且通过对比查看是否需要剪切
+        let notEmpty = this.clip(context);
+        if (!notEmpty) {
+            // 如果剪切区域是一个scale为0的区域，则说明图形绘制在一个没有大小的区域内
+            // 则不需要绘制
+            return;
+        }
+        let tempRegion = context.lastClipRegion;
+
+        // 如果计算矩阵成功就进行绘制，否则就不绘制
+        // 所谓计算成功是说，scale不为0
+        if (this.applyCurrentTransform(context)) {
+            context.save();
+            this.applyDrawingStates(context);
+            this.drawSelf(context, this.width, this.height);
+            context.restore();
+            this.drawChildren(context);
+        }
+
+        context.lastClipRegion = tempRegion;
     }
 
     drawChildren(context) {
@@ -131,14 +145,16 @@ export default class Drawable extends Transformable {
      * @param {CanvasRenderingContext2D} context 
      */
     applyCurrentTransform(context) {
-        let matrix = this.getTransformMatrix();
+        let matrix = this.getWorldTransformMatrix();
+        if (matrix == null) return false;
         let data = matrix.data;
         // 这里注意，CanvasRenderingContext2D的参数（a,b,c,d,e,f）的transform数据对应矩阵和我自己的只有6个数的3x3矩阵：
         // a,c,e    a0 a1 a2
         // b,d,f => a3 a4 a5
         // 0,0,1    0  0  1
         // 所以我要给的参数是：(a0,a3,a1,a4,a2,a5)
-        context.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
+        context.setTransform(data[0], data[3], data[1], data[4], data[2], data[5]);
+        return true;
     }
 
     /**
