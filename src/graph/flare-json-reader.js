@@ -3,7 +3,7 @@ import utils from "./utils.js";
 import Shape from "./shapes/shape.js";
 import StrokeStyle from "./shapes/stroke-style.js";
 import FillStyle from "./shapes/fill-style.js";
-import CirclePath from "./shapes/circle-path.js";
+import EllipsePath from "./shapes/ellipse-path.js";
 import Animation from "../animation/animation.js";
 import AnimationPropertyKey from "../animation/animation-property-key.js";
 import Path from "./shapes/path.js";
@@ -33,11 +33,10 @@ export default class FlareJSONReader {
                     color: utils.converColorArray(artboard.color),
                     opacity: artboard.opacity
                 });
-                containers.push(container);
-                this.readNodes(artboard, container, tempstack);
+
+                let renderObj = this.readNodes(artboard, container, tempstack);
                 this.initClips(container, tempstack);
-                this.sortDrawable(container);
-                this.readAnimations(artboard, container, tempstack);
+                containers.push({ render: renderObj, artboard: container, animations: this.readAnimations(artboard, tempstack) });
             }
 
         });
@@ -57,23 +56,9 @@ export default class FlareJSONReader {
         })
     }
 
-    static sortDrawable(parent) {
-        let children = parent._children;
-        if (children != null && children.length > 1) {
-            children.sort((a, b) => {
-                if (a.drawOrder != null && b.drawOrder != null) {
-                    return a.drawOrder - b.drawOrder;
-                }
-                return 0;
-            })
-
-            children.forEach(child => {
-                this.sortDrawable(child);
-            })
-        }
-    }
-
     static getPropertyName(p) {
+        if (p == 'posX') return 'x';
+        if (p == 'posY') return 'y';
         if (p == 'strokeStart') {
             return 'start';
         }
@@ -108,7 +93,9 @@ export default class FlareJSONReader {
                                 keyFrames.forEach(keyFrame => {
                                     keyFrame.time *= 1000;
                                     // keyframe的时间值是一个百分比
-                                    keyFrame.time = keyFrame.time / animation.duration;
+                                    if (animation.duration == 0) keyFrame.time = 0;
+                                    else
+                                        keyFrame.time = keyFrame.time / animation.duration;
                                     propertyAnimation.addKeyFrame(keyFrame);
                                 });
                             });
@@ -120,14 +107,16 @@ export default class FlareJSONReader {
         });
     }
 
-    static readAnimations(artboard, container, tempstack) {
+    static readAnimations(artboard, tempstack) {
         let animations = artboard.animations;
+        let anims = [];
         animations.forEach(animation => {
             let ani = new Animation(animation);
             ani.duration *= 1000;
             this.readKeyed(animation.keyed, ani, tempstack);
-            container.addAnimation(ani);
+            anims.push(ani);
         });
+        return anims;
     }
 
     static readPathPoints(path, points) {
@@ -144,6 +133,7 @@ export default class FlareJSONReader {
 
     static readNodes(artboard, container, tempstack) {
         let nodes = artboard.nodes;
+        let renderObj = [];
         for (let i = 0; i < nodes.length; i++) {
             let node = nodes[i];
             if (node.drawOrder != null) {
@@ -167,10 +157,6 @@ export default class FlareJSONReader {
                     parent = tempstack[node.parent];
                 }
                 parent.addChild(group);
-                if (parent.drawOrder == null) {
-                    parent.drawOrder = group.drawOrder;
-                }
-                parent.drawOrder = Math.max(group.drawOrder, parent.drawOrder);
                 tempstack[i] = group;
             }
             if (node.type == 'shape') {
@@ -179,8 +165,8 @@ export default class FlareJSONReader {
                     x: node.translation[0],
                     y: node.translation[1],
                     id: i,
+                    rotation: node.rotation,
                     name: node.name,
-                    rotate: node.ratation,
                     scaleX: node.scale[0],
                     scaleY: node.scale[1],
                     opacity: node.opacity,
@@ -191,10 +177,7 @@ export default class FlareJSONReader {
                 if (node.parent != null) {
                     parent = tempstack[node.parent];
                 }
-                if (parent.drawOrder == null) {
-                    parent.drawOrder = shape.drawOrder;
-                }
-                parent.drawOrder = Math.max(shape.drawOrder, parent.drawOrder);
+                renderObj.push(shape);
                 parent.addChild(shape);
                 tempstack[i] = shape;
             }
@@ -202,7 +185,7 @@ export default class FlareJSONReader {
             if (node.type == 'ellipse') {
                 let parent = tempstack[node.parent];
                 // ellipse的translation是以中心开始的，这里要转一下：
-                let path = new CirclePath({
+                let path = new EllipsePath({
                     drawOrder: node.drawOrder,
                     x: node.translation[0],
                     y: node.translation[1],
@@ -210,7 +193,7 @@ export default class FlareJSONReader {
                     height: node.height,
                     id: i,
                     name: node.name,
-                    rotate: node.ratation,
+                    rotation: node.ratation,
                     scaleX: node.scale[0],
                     scaleY: node.scale[1],
                     opacity: node.opacity
@@ -323,5 +306,7 @@ export default class FlareJSONReader {
                 shape.addFillStyle(fillStyle);
             }
         }
+
+        return renderObj;
     }
 }

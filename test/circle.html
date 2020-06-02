@@ -17,7 +17,7 @@
 </body>
 
 <script type="module">
-    import Graph from '../src/graph/graph.js';
+    import Render from '../src/graph/render.js';
     import Circle from '../src/graph/shapes/circle.js';
     import FillStyle from '../src/graph/shapes/fill-style.js';
     import StrokeStyle from '../src/graph/shapes/stroke-style.js';
@@ -31,8 +31,23 @@
     let button1 = document.getElementById('b1');
     let button2 = document.getElementById('b2');
     let canvas = document.getElementById('canvas');
-    let graph = new Graph(canvas);
+    canvas.addEventListener('click', function () {
+        let index = render.getRunningAnimationIndex();
+        if (index == -1) {
+            index = 0;
+        } else {
+            index++;
+            if (index > render.animations.length - 1) {
+                index = 0;
+            }
+        }
+        render.cancelRunningAnimation();
+        render.startAnimation(index);
+    });
 
+    utils.isWX = true;
+    let render = new Render(canvas);
+    let root = render.createRoot();
 
     node.addEventListener('input', function (e) {
         let target = e.target;
@@ -49,40 +64,37 @@
     });
 
     button.addEventListener('click', function (e) {
-        let container = graph._children[0];
-        let animation = container.animations[0];
-        if (animation) {
-            animation.start().then(() => {
-                console.log('动画结束');
-            }).catch(err => {
-                console.error(err);
-            });
-        }
+        // render.animations[1].duration = 6000;
+        render.startAnimation(0).then(() => {
+            console.log('动画结束');
+        }).catch(err => {
+            console.error(err);
+        });
     });
 
     button1.addEventListener('click', function (e) {
-        let container = graph._children[0];
-        let animation = container.animations[0];
-        if (animation) {
-            animation.cancel();
-        }
+        render.cancleAnimation(0);
     });
 
     button2.addEventListener('click', function (e) {
-        let container = graph._children[0];
-        let animation = container.animations[0];
-        if (animation) {
-            animation.pause();
-        }
+        render.pauseAnimation(0);
     });
 
 
     function fileReady(content) {
         let containers = FlareJSONReader.read(content);
         let container = containers[0];
-        let animation = container.animations[0];
-        graph.addChild(container);
-        graph.update();
+        root.addChild(container.artboard);
+        console.log(container);
+        let renderObjs = container.render;
+        renderObjs.forEach(r => {
+            render.addRenderNode(r);
+        });
+        // TEST
+        // render.addRenderNode(root);
+        render.sort();
+        render.animations = container.animations;
+        render.update();
     }
 
 

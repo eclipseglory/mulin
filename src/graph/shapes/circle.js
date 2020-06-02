@@ -1,10 +1,10 @@
 import Shape from "./shape.js";
-import CirclePath from "./circle-path.js";
+import EllipsePath from "./ellipse-path.js";
 
 export default class Circle extends Shape {
     constructor(params = {}) {
         super(params);
-        this._circlePath = new CirclePath(); //加一个圆形path进去
+        this._circlePath = new EllipsePath(); //加一个圆形path进去
         this._radius = params['radius'] == null ? 0 : params['radius'];
         this._circlePath.width = this._radius * 2;
         this._circlePath.height = this._circlePath.width;

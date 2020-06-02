@@ -5,6 +5,7 @@ export default class RectanglePath extends Path {
         if (props.anchorX == null) props.anchorX = 0.5;
         if (props.anchorY == null) props.anchorY = 0.5;
         super(props);
+        this._dirty = true;
         this._radius = props.radius;
         if (this._radius == null) this._radius = 0;
     }
