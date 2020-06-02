@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>白天黑夜切换按钮</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+    <div id="div"
+        style="display:flex;justify-content: center;align-items: center;background-color:#333333;width:100vw;height:100vh">
+        <canvas id="canvas" style="background-color:#333333;width:800px;height:800px"></canvas>
+    </div>
+</body>
+<script type="module">
+    import FlareJSONReader from '../../../src/graph/flare-json-reader.js';
+    import Render from '../../../src/graph/render.js';
+    let night = true;
+    let lock = false;
+    let canvas = document.getElementById('canvas');
+    let div = document.getElementById('div');
+    canvas.addEventListener('click', function () {
+        if (lock) return;
+        lock = true;
+        if (night) {
+            render.cancelRunningAnimation();
+            render.startAnimation(3).then(() => {
+                render.startAnimation(1);
+                night = !night;
+                lock = false;
+                canvas.style.backgroundColor = '#aaaaaa';
+                div.style.backgroundColor = '#aaaaaa';
+            });
+        } else {
+            render.cancelRunningAnimation();
+            render.startAnimation(2).then(() => {
+                render.startAnimation(0);
+                night = !night;
+                lock = false;
+                canvas.style.backgroundColor = '#333333';
+                div.style.backgroundColor = '#333333';
+            });
+        }
+    });
+
+    let render = new Render(document.getElementById('canvas'));
+
+    function readContent(content) {
+        let containers = FlareJSONReader.read(content);
+        let container = containers[0];
+        let root = render.createRoot();
+        let artboard = container.artboard;
+        root.addChild(artboard);
+        artboard.x = (root.width - artboard.width) / 2;
+        artboard.y = (root.height - artboard.height) / 2;
+        console.log(container);
+        let renderObjs = container.render;
+        renderObjs.forEach(r => {
+            render.addRenderNode(r);
+        });
+        // TEST
+        // render.addRenderNode(root);
+        render.sort();
+        render.animations = container.animations;
+        render.startAnimation(0);
+        // render.update();
+    }
+
+    var http = new XMLHttpRequest();
+    let docName = './switch_daytime.flr';
+    http.open("GET", docName, true);
+    http.send(null);
+    http.onload = function (e) {
+        let target = e.target;
+        readContent(target.response);
+        // console.log(target.response);
+        // console.log(res);
+    }
+
+</script>
+
+</html>
