@@ -2,7 +2,6 @@ import BezierEasing from '../graph/math/bezier-easing.js';
 
 export default class AnimationPropertyKey {
     constructor(props = {}) {
-        this.duration = props.duration;
         this.figure = props.figure;
         this.property = props.property;
         this.keyStack = [];
@@ -25,7 +24,7 @@ export default class AnimationPropertyKey {
         }
         let keyFrame = {
             id: this.keyStack.length,
-            time: props.time / this.duration,
+            time: props.time,
             value: props.value,
             timingFunctionType: props.interpolatorType
         }
