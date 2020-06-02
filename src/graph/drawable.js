@@ -1,4 +1,5 @@
 import Transformable from "./transformable.js";
+import utils from "./utils.js";
 
 export default class Drawable extends Transformable {
     constructor(props = {}) {
@@ -13,26 +14,38 @@ export default class Drawable extends Transformable {
         if (this._visible == null) this.visible = true;
 
         this._children = [];
-        this._parent;
+        this.clips = props.clips;
     }
     /// 属性 ////
     get visible() { return this._visible; }
 
     set visible(v) { this._visible = v; }
 
+    get children() { return this._children; }
 
     /// 方法////
+
+    addClip(shape, intersect) {
+        if (this.clips == null) this.clips = [];
+        this.clips.push({ shape: shape, intersect: intersect });
+    }
+
+    forEachChild(process) {
+        this._children.forEach(child => {
+            process(child);
+        })
+    }
 
     /**
      * 添加一个绘制子节点。如果子节点已经添加到某节点下，该方法会抛出异常
      * @param {Figure} child 
      */
     addChild(child) {
-        if (child._parent != null) {
+        if (child.parent != null) {
             throw new Error('子节点不能同时挂在多个父节点下,请先将该子节点从原父节点移除后再添加');
         }
         this._children.push(child);
-        child._parent = this;
+        child.parent = this;
     }
 
     /**
@@ -51,7 +64,7 @@ export default class Drawable extends Transformable {
         if (index < 0 || index > this._children.length - 1) return;
         let c = this._children.splice(index, 1);
         if (c != null && c.length == 1) {
-            c[0]._parent = null;
+            c[0].parent = null;
         }
     }
     /**
@@ -62,8 +75,38 @@ export default class Drawable extends Transformable {
     }
 
     applyDrawingStates(context) {
-        context.globalAlpha = this.opacity;
+        context.globalAlpha *= this.opacity;
         context.globalCompositeOperation = this.blendMode;
+    }
+
+    clip(ctx) {
+        if (!this.clips) return;
+        // TODO 这里有个BUG，不知道怎么修复：
+        // 如果有多个Clips，只能剪切第一个，其他剪切完后会无法绘制图形,
+        // 在Flare的工具里也是这个效果
+        this.clips.forEach(shapeClip => {
+            let intersect = shapeClip.intersect;
+            let shape = shapeClip.shape;
+            if (shape.drawPaths == null) return;
+            let path = shape.getShapePath(ctx);
+            let m = shape.getWorldTransformMatrix();
+            if (path) {
+                ctx.save();
+                ctx.setTransform(m.toSVGMatrix());
+                if (intersect) ctx.clip(path); else ctx.clip(path, 'evenodd');
+                ctx.restore();
+
+            } else {
+                ctx.beginPath();//清空之前的path栈
+                ctx.save();
+                ctx.setTransform(m.toSVGMatrix());
+                shape.drawPaths(ctx, shape.width, shape.height);
+                ctx.closePath();
+                ctx.restore();
+                if (intersect) ctx.clip(); else ctx.clip('evenodd');
+            }
+        });
+
     }
 
     draw(context) {
@@ -71,6 +114,7 @@ export default class Drawable extends Transformable {
         context.save();
         this.applyCurrentTransform(context);
         this.applyDrawingStates(context);
+        this.clip(context);
         this.drawSelf(context, this.width, this.height);
         this.drawChildren(context);
         context.restore();

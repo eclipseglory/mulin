@@ -64,10 +64,6 @@ export default class Circle extends Shape {
     }
 
     canDraw() {
-        return super.canDraw();
-    }
-
-    draw(ctx) {
-        super.draw(ctx);
+        return super.canDraw() && this.radius != 0;
     }
 }

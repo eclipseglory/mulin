@@ -30,8 +30,10 @@ export default class Graph extends Figure {
         this.ctx.wx_canvas = canvas; //我服了，到处要使用canvas的地方
         this.canvas = canvas;
         // 伸缩自身，因为canvas内存大小都变了
-        // 不用自己的scale是因为那个是基于中心拉伸的，直接让ctx的transform matrix拉伸即可
-        this.ctx.scale(utils.DRP, utils.DRP);
+        this.anchorY = 0;
+        this.anchorX = 0;
+        this.scaleX = utils.DRP;
+        this.scaleY = utils.DRP;
         this._rafId, this._rafUpdateId;
     }
 

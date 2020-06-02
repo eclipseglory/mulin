@@ -11,6 +11,7 @@ import Point from "./shapes/point.js";
 import Group from './group.js';
 import RadicalGradientColor from "./radical-gradient-color.js";
 import LinearGradientColor from "./linear-gradient-color.js";
+import RectanglePath from "./shapes/rectangle-path.js";
 
 export default class FlareJSONReader {
     constructor() { }
@@ -34,11 +35,26 @@ export default class FlareJSONReader {
                 });
                 containers.push(container);
                 this.readNodes(artboard, container, tempstack);
+                this.initClips(container, tempstack);
                 this.sortDrawable(container);
                 this.readAnimations(artboard, container, tempstack);
             }
+
         });
         return containers;
+    }
+
+    static initClips(container, tempstack) {
+        if (container.clips) {
+            for (let i = 0; i < container.clips.length; i++) {
+                let id = container.clips[i].node;
+                container.clips[i].shape = tempstack[id];
+                delete container.clips[i].node;
+            }
+        }
+        container.children.forEach(child => {
+            this.initClips(child, tempstack);
+        })
     }
 
     static sortDrawable(parent) {
@@ -85,13 +101,14 @@ export default class FlareJSONReader {
                         if (propertyName && propertyName in figure) {
                             let array = key[p];
                             let propertyAnimation = new AnimationPropertyKey({
-                                duration: animation.duration, // 这个duration其实是为了计算一个比例，并非真正的运行时间
                                 figure: figure,
                                 property: propertyName
                             });
                             array.forEach(keyFrames => {
                                 keyFrames.forEach(keyFrame => {
                                     keyFrame.time *= 1000;
+                                    // keyframe的时间值是一个百分比
+                                    keyFrame.time = keyFrame.time / animation.duration;
                                     propertyAnimation.addKeyFrame(keyFrame);
                                 });
                             });
@@ -142,7 +159,8 @@ export default class FlareJSONReader {
                     rotate: node.ratation,
                     scaleX: node.scale[0],
                     scaleY: node.scale[1],
-                    opacity: node.opacity
+                    opacity: node.opacity,
+                    clips: node.clips
                 });
                 let parent = container;
                 if (node.parent != null) {
@@ -166,7 +184,8 @@ export default class FlareJSONReader {
                     scaleX: node.scale[0],
                     scaleY: node.scale[1],
                     opacity: node.opacity,
-                    visible: node.isVisible
+                    visible: node.isVisible,
+                    clips: node.clips
                 });
                 let parent = container;
                 if (node.parent != null) {
@@ -185,8 +204,8 @@ export default class FlareJSONReader {
                 // ellipse的translation是以中心开始的，这里要转一下：
                 let path = new CirclePath({
                     drawOrder: node.drawOrder,
-                    x: node.translation[0] - node.width / 2,
-                    y: node.translation[1] - node.height / 2,
+                    x: node.translation[0],
+                    y: node.translation[1],
                     width: node.width,
                     height: node.height,
                     id: i,
@@ -195,6 +214,27 @@ export default class FlareJSONReader {
                     scaleX: node.scale[0],
                     scaleY: node.scale[1],
                     opacity: node.opacity
+                });
+                tempstack[i] = path;
+                parent.addPath(path);
+            }
+
+            if (node.type == 'rectangle') {
+                let parent = tempstack[node.parent];
+                // ellipse的translation是以中心开始的，这里要转一下：
+                let path = new RectanglePath({
+                    drawOrder: node.drawOrder,
+                    x: node.translation[0],
+                    y: node.translation[1],
+                    width: node.width,
+                    height: node.height,
+                    id: i,
+                    name: node.name,
+                    rotate: node.ratation,
+                    scaleX: node.scale[0],
+                    scaleY: node.scale[1],
+                    opacity: node.opacity,
+                    radius: node.cornerRadius,
                 });
                 tempstack[i] = path;
                 parent.addPath(path);

@@ -17,6 +17,28 @@ export default class Path extends Transformable {
 
     //// 属性 ////
 
+    get width() {
+        return super.width;
+    }
+
+    set width(w) {
+        if (this.width != w) {
+            super.width = w;
+            this.fireDirty();
+        }
+    }
+
+    get height() {
+        return super.height;
+    }
+
+    set height(w) {
+        if (this.height != w) {
+            super.height = w;
+            this.fireDirty();
+        }
+    }
+
     get length() {
         if (this._length == null) {
             this._length = this.calculatePathLength();

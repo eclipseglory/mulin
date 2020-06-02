@@ -37,7 +37,7 @@ export default class BaseStyle {
     }
 
     _applyStyle(ctx) {
-        ctx.globalAlpha = this.opacity;
+        ctx.globalAlpha *= this.opacity;
     }
 
     paint(ctx, path) {

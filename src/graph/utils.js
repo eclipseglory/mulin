@@ -3,6 +3,7 @@ import Color from "./color.js";
 const PI_DIV_180 = Math.PI / 180;
 const DRP = pixelRatio();
 
+// 这是为了模拟不能生成Path2D直接绘制的效果
 var isWX = false;
 
 // Legendre-Gauss abscissae with n=24 (x_i values, defined at i=n as the roots of the nth order Legendre polynomial Pn(x))
@@ -205,7 +206,11 @@ function createPath2D(canvas, path) {
     if (isWX)
         return null;
     if (!window) {
-        return canvas.createPath2D(path);
+        let path2d = canvas.createPath2D(path);
+        if (path2d && path2d.closePath == null) {
+            return null;
+        }
+        return path2d;
     } else {
         return new Path2D(path)
     }

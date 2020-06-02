@@ -59,6 +59,16 @@ export default class Matrix3 {
         return m3.identity();
     }
 
+    clone() {
+        let matrix = new Matrix3();
+        let data = this.data;
+        let out = matrix.data;
+        for (let i = 0; i < data.length; i++) {
+            out[i] = data[i];
+        }
+        return matrix;
+    }
+
     identity() {
         let out = this._array;
         out[0] = 1, out[1] = 0, out[2] = 0;

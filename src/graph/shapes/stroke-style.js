@@ -39,9 +39,6 @@ export default class StrokeStyle extends BaseStyle {
         super._applyStyle(ctx);
         if (this.color != null) {
             ctx.strokeStyle = this.strokeColor.color;
-            if (ctx.strokeStyle == '#000000') {
-                console.log(ctx.strokeStyle);
-            }
         } else {
             if (this.gradientColor != null) {
                 ctx.strokeStyle = this.gradientColor.getGradient(ctx);

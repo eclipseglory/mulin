@@ -33,10 +33,19 @@ export default class Transformable {
 
         this._matrix = new Matrix3();
 
+        this._parent;
+
         this._transformDirty = true;
     }
 
     //// 属性 //////////
+
+    get isTransformDirty() {
+        return this._transformDirty;
+    }
+
+    get parent() { return this._parent; }
+    set parent(p) { this._parent = p; }
 
     get width() { return this._width; }
 
@@ -179,4 +188,20 @@ export default class Transformable {
         return matrix;
     }
 
+    getWorldTransformMatrix() {
+        if (this.parent) {
+            let matrix = this.getTransformMatrix();
+            let pw = this.parent.getWorldTransformMatrix();
+            if (pw.isIdentity()) {
+                return matrix.clone();
+            }
+            if (matrix.isIdentity()) {
+                return pw;
+            }
+            pw.multiply(matrix);
+            return pw;
+        } else {
+            return this.getTransformMatrix().clone();
+        }
+    }
 }

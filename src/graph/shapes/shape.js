@@ -11,18 +11,25 @@ export default class Shape extends Drawable {
         this.strokeStyles = [];
         // this.fillStyle = props.fillStyle;
         // this.strokeStyle = props.strokeStyle;
-
         this._path2d;
         this._paths = [];
     }
 
     //// 属性 ////
 
-    get shapePath() {
+    /// 方法 ////
+
+    getShapePath(ctx) {
+        if (this.isDirty()) {
+            // 这些操作全是因为微信没有path2d造成的
+            this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
+            if (this._path2d != null) {
+                this.createSubPath2D(ctx);
+            }
+            this.saveDirty();
+        }
         return this._path2d;
     }
-
-    /// 方法 ////
 
     addFillStyle(style) {
         this.fillStyles.push(style);
@@ -74,36 +81,27 @@ export default class Shape extends Drawable {
             && this._paths.length != 0 && super.canDraw();
     }
 
+    drawPaths(ctx, w, h) {
+        this._paths.forEach(p => {
+            ctx.save();
+            let matrix = p.getTransformMatrix();
+            if (!matrix.isIdentity()) {
+                let data = matrix.data;
+                ctx.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
+            }
+            p.createPath(ctx, p.width, p.height);
+            ctx.restore();
+        });
+    }
+
     drawSelf(ctx, w, h) {
-        if (this.isDirty()) {
-            // 这些操作全是因为微信没有path2d造成的
-            this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
-            if (this._path2d && this._path2d.closePath == null) {
-                this._path2d = null;
-                //真机上path2d创建出来是一个object，根本不能用
-            }
-            if (this._path2d != null) {
-                this.createSubPath2D(ctx);
-            }
-        }
+        let path2d = this.getShapePath(ctx);
 
-        if (this._path2d == null) {
+        if (path2d == null) {
             // 没有path就硬画
-            ctx.beginPath();
-            this._paths.forEach(p => {
-                ctx.save();
-                let matrix = p.getTransformMatrix();
-                if (!matrix.isIdentity()) {
-                    let data = matrix.data;
-                    ctx.transform(data[0], data[3], data[1], data[4], data[2], data[5]);
-                }
-                p.createPath(ctx, p.width, p.height);
-                ctx.restore();
-            });
+            ctx.beginPath();// 清空之前的Path栈
+            this.drawPaths(ctx, w, h);
         }
-
-        // 不管是不直接硬画，都还是save一下
-        this.saveDirty();
 
         this.fillStyles.forEach(fillStyle => {
             fillStyle.paint(ctx, this._path2d);

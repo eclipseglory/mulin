@@ -5,7 +5,7 @@ const END = Math.PI * 1.5;
  * 特殊的正圆形Path
  */
 export default class CirclePath extends Path {
-    constructor(props = { anchorX: 0.5, anchorY: 0.5 }) {
+    constructor(props = { anchorX: 0, anchorY: 0 }) {
         super(props);
     }
 
@@ -18,7 +18,9 @@ export default class CirclePath extends Path {
      * @param {*} h 
      */
     createPath(ctx, w, h) {
-        ctx.arc(w / 2, h / 2, w / 2, START, END);
+        ctx.moveTo(0, -w / 2);
+        ctx.arc(0, 0, w / 2, START, END);
+        ctx.closePath();
     }
 
     calculatePathLength() {
