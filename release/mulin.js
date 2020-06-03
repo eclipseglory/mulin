@@ -270,8 +270,6 @@ class Animation {
 
         this.keyed = [];
 
-        this.animationMap = {};
-
         this._running = false;
         this.render = props.render;
         this.refreshCount = 0;
@@ -285,12 +283,18 @@ class Animation {
         return this._running;
     }
 
+    applyAnimationState(percent) {
+        let keyed = this.keyed;
+        keyed.forEach(keyFrame => {
+            keyFrame.applyCurrent(percent);
+        });
+    }
+
     start() {
         let render = this.render;
         if (!render) return;
         if (this._running) return Promise.reject('已经开始运行了');
         let total = this.duration * this.fps / 1000;
-        let keyed = this.keyed;
         let that = this;
         return new Promise((resolve, reject) => {
             let start = render.startRAF({
@@ -304,9 +308,7 @@ class Animation {
                         }
                     }
                     let percent = that.refreshCount / total;
-                    keyed.forEach(keyFrame => {
-                        keyFrame.applyCurrent(percent);
-                    });
+                    that.applyAnimationState(percent);
                 },
                 afterDraw() {
                     that.refreshCount++;
@@ -847,7 +849,7 @@ var _flareJsonReader2 = _interopRequireDefault(_flareJsonReader);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var version = "0.0.1.202006031857";
+var version = "0.0.1.202006040451";
 var style = "color:red;background-color:yellow";
 
 var outdefine = {
@@ -1085,14 +1087,6 @@ var _shape5 = __webpack_require__(/*! ./shapes/shape.js */ "./build/es5-graph/sh
 
 var _shape6 = _interopRequireDefault(_shape5);
 
-var _strokeStyle = __webpack_require__(/*! ./shapes/stroke-style.js */ "./build/es5-graph/shapes/stroke-style.js");
-
-var _strokeStyle2 = _interopRequireDefault(_strokeStyle);
-
-var _fillStyle3 = __webpack_require__(/*! ./shapes/fill-style.js */ "./build/es5-graph/shapes/fill-style.js");
-
-var _fillStyle4 = _interopRequireDefault(_fillStyle3);
-
 var _ellipsePath = __webpack_require__(/*! ./shapes/ellipse-path.js */ "./build/es5-graph/shapes/ellipse-path.js");
 
 var _ellipsePath2 = _interopRequireDefault(_ellipsePath);
@@ -1105,9 +1099,9 @@ var _animationPropertyKey = __webpack_require__(/*! ../animation/animation-prope
 
 var _animationPropertyKey2 = _interopRequireDefault(_animationPropertyKey);
 
-var _path3 = __webpack_require__(/*! ./shapes/path.js */ "./build/es5-graph/shapes/path.js");
+var _path4 = __webpack_require__(/*! ./shapes/path.js */ "./build/es5-graph/shapes/path.js");
 
-var _path4 = _interopRequireDefault(_path3);
+var _path5 = _interopRequireDefault(_path4);
 
 var _point = __webpack_require__(/*! ./shapes/point.js */ "./build/es5-graph/shapes/point.js");
 
@@ -1128,6 +1122,18 @@ var _linearGradientColor2 = _interopRequireDefault(_linearGradientColor);
 var _rectanglePath = __webpack_require__(/*! ./shapes/rectangle-path.js */ "./build/es5-graph/shapes/rectangle-path.js");
 
 var _rectanglePath2 = _interopRequireDefault(_rectanglePath);
+
+var _strokeStyle = __webpack_require__(/*! ./shapes/paint-style/stroke-style.js */ "./build/es5-graph/shapes/paint-style/stroke-style.js");
+
+var _strokeStyle2 = _interopRequireDefault(_strokeStyle);
+
+var _fillStyle3 = __webpack_require__(/*! ./shapes/paint-style/fill-style.js */ "./build/es5-graph/shapes/paint-style/fill-style.js");
+
+var _fillStyle4 = _interopRequireDefault(_fillStyle3);
+
+var _starPath = __webpack_require__(/*! ./shapes/star-path.js */ "./build/es5-graph/shapes/star-path.js");
+
+var _starPath2 = _interopRequireDefault(_starPath);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1341,7 +1347,6 @@ var FlareJSONReader = function () {
 
                 if (node.type == 'rectangle') {
                     var _parent3 = tempstack[node.parent];
-                    // ellipse的translation是以中心开始的，这里要转一下：
                     var _path = new _rectanglePath2.default({
                         drawOrder: node.drawOrder,
                         x: node.translation[0],
@@ -1360,9 +1365,30 @@ var FlareJSONReader = function () {
                     _parent3.addPath(_path);
                 }
 
-                if (node.type == 'path') {
+                if (node.type == 'star') {
                     var _parent4 = tempstack[node.parent];
-                    var _path2 = new _path4.default({
+                    var _path2 = new _starPath2.default({
+                        drawOrder: node.drawOrder,
+                        x: node.translation[0],
+                        y: node.translation[1],
+                        width: node.width,
+                        height: node.height,
+                        id: i,
+                        name: node.name,
+                        rotate: node.ratation,
+                        scaleX: node.scale[0],
+                        scaleY: node.scale[1],
+                        opacity: node.opacity,
+                        innerRadius: node.innerRadius,
+                        starPoints: node.points
+                    });
+                    tempstack[i] = _path2;
+                    _parent4.addPath(_path2);
+                }
+
+                if (node.type == 'path') {
+                    var _parent5 = tempstack[node.parent];
+                    var _path3 = new _path5.default({
                         x: node.translation[0],
                         y: node.translation[1],
                         width: node.width,
@@ -1375,9 +1401,9 @@ var FlareJSONReader = function () {
                         opacity: node.opacity,
                         isClose: node.isClosed
                     });
-                    this.readPathPoints(_path2, node.points);
-                    tempstack[i] = _path2;
-                    _parent4.addPath(_path2);
+                    this.readPathPoints(_path3, node.points);
+                    tempstack[i] = _path3;
+                    _parent5.addPath(_path3);
                 }
 
                 if (node.type == 'colorStroke') {
@@ -2391,96 +2417,6 @@ exports.default = Render;
 
 /***/ }),
 
-/***/ "./build/es5-graph/shapes/base-style.js":
-/*!**********************************************!*\
-  !*** ./build/es5-graph/shapes/base-style.js ***!
-  \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _color = __webpack_require__(/*! ../color.js */ "./build/es5-graph/color.js");
-
-var _color2 = _interopRequireDefault(_color);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var BaseStyle = function () {
-    function BaseStyle() {
-        var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        _classCallCheck(this, BaseStyle);
-
-        this.name = props.name;
-        this.id = props.id;
-        this._color;
-        if (props.color != null) this._color = new _color2.default(props.color);
-        this.gradientColor = props.gradientColor;
-        this.opacity = props.opacity;
-        if (this.opacity == null) {
-            this.opacity = 1;
-        }
-    }
-
-    _createClass(BaseStyle, [{
-        key: "canDraw",
-        value: function canDraw() {
-            return (this.color != null || this.gradientColor != null) && this.opacity != 0;
-        }
-    }, {
-        key: "_applyStyle",
-        value: function _applyStyle(ctx) {
-            ctx.globalAlpha *= this.opacity;
-        }
-    }, {
-        key: "paint",
-        value: function paint(ctx, path) {
-            if (!this.canDraw()) return;
-            ctx.save();
-            this._applyStyle(ctx);
-            this._paintStyle(ctx, path);
-            ctx.restore();
-        }
-    }, {
-        key: "_paintStyle",
-        value: function _paintStyle(ctx, path) {}
-    }, {
-        key: "color",
-        get: function get() {
-            return this._color;
-        },
-        set: function set(array) {
-            if (array instanceof _color2.default) {
-                this._color = array;
-                return;
-            }
-            if (array instanceof Array) {
-                if (this._color == null) {
-                    this._color = new _color2.default(array);
-                    return;
-                }
-                this._color.color = array;
-            }
-        }
-    }]);
-
-    return BaseStyle;
-}();
-
-exports.default = BaseStyle;
-
-/***/ }),
-
 /***/ "./build/es5-graph/shapes/circle.js":
 /*!******************************************!*\
   !*** ./build/es5-graph/shapes/circle.js ***!
@@ -2686,10 +2622,100 @@ exports.default = EllipsePath;
 
 /***/ }),
 
-/***/ "./build/es5-graph/shapes/fill-style.js":
-/*!**********************************************!*\
-  !*** ./build/es5-graph/shapes/fill-style.js ***!
-  \**********************************************/
+/***/ "./build/es5-graph/shapes/paint-style/base-style.js":
+/*!**********************************************************!*\
+  !*** ./build/es5-graph/shapes/paint-style/base-style.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _color = __webpack_require__(/*! ../../color.js */ "./build/es5-graph/color.js");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BaseStyle = function () {
+    function BaseStyle() {
+        var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        _classCallCheck(this, BaseStyle);
+
+        this.name = props.name;
+        this.id = props.id;
+        this._color;
+        if (props.color != null) this._color = new _color2.default(props.color);
+        this.gradientColor = props.gradientColor;
+        this.opacity = props.opacity;
+        if (this.opacity == null) {
+            this.opacity = 1;
+        }
+    }
+
+    _createClass(BaseStyle, [{
+        key: "canDraw",
+        value: function canDraw() {
+            return (this.color != null || this.gradientColor != null) && this.opacity != 0;
+        }
+    }, {
+        key: "_applyStyle",
+        value: function _applyStyle(ctx) {
+            ctx.globalAlpha *= this.opacity;
+        }
+    }, {
+        key: "paint",
+        value: function paint(ctx, path) {
+            if (!this.canDraw()) return;
+            ctx.save();
+            this._applyStyle(ctx);
+            this._paintStyle(ctx, path);
+            ctx.restore();
+        }
+    }, {
+        key: "_paintStyle",
+        value: function _paintStyle(ctx, path) {}
+    }, {
+        key: "color",
+        get: function get() {
+            return this._color;
+        },
+        set: function set(array) {
+            if (array instanceof _color2.default) {
+                this._color = array;
+                return;
+            }
+            if (array instanceof Array) {
+                if (this._color == null) {
+                    this._color = new _color2.default(array);
+                    return;
+                }
+                this._color.color = array;
+            }
+        }
+    }]);
+
+    return BaseStyle;
+}();
+
+exports.default = BaseStyle;
+
+/***/ }),
+
+/***/ "./build/es5-graph/shapes/paint-style/fill-style.js":
+/*!**********************************************************!*\
+  !*** ./build/es5-graph/shapes/paint-style/fill-style.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2704,13 +2730,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _baseStyle = __webpack_require__(/*! ./base-style.js */ "./build/es5-graph/shapes/base-style.js");
+var _baseStyle = __webpack_require__(/*! ./base-style.js */ "./build/es5-graph/shapes/paint-style/base-style.js");
 
 var _baseStyle2 = _interopRequireDefault(_baseStyle);
-
-var _color = __webpack_require__(/*! ../color.js */ "./build/es5-graph/color.js");
-
-var _color2 = _interopRequireDefault(_color);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2787,6 +2809,129 @@ var FillStyle = function (_BaseStyle) {
 }(_baseStyle2.default);
 
 exports.default = FillStyle;
+
+/***/ }),
+
+/***/ "./build/es5-graph/shapes/paint-style/stroke-style.js":
+/*!************************************************************!*\
+  !*** ./build/es5-graph/shapes/paint-style/stroke-style.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _baseStyle = __webpack_require__(/*! ./base-style.js */ "./build/es5-graph/shapes/paint-style/base-style.js");
+
+var _baseStyle2 = _interopRequireDefault(_baseStyle);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var JOIN = ['bevel', 'round', 'miter'];
+var CAP = ['butt', 'round', 'square'];
+
+var StrokeStyle = function (_BaseStyle) {
+    _inherits(StrokeStyle, _BaseStyle);
+
+    function StrokeStyle() {
+        var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        _classCallCheck(this, StrokeStyle);
+
+        var _this = _possibleConstructorReturn(this, (StrokeStyle.__proto__ || Object.getPrototypeOf(StrokeStyle)).call(this, props));
+
+        _this.trim = props.trim;
+        if (_this.trim == null) _this.trim = 0;
+        _this.end = props.end;
+        if (_this.end == null) _this.end = 1;
+        _this.start = props.start;
+        if (_this.start == null) _this.start = 0;
+        _this.offset = props.offset;
+        if (_this.offset == null) _this.offset = 0;
+        _this.join = props.join;
+        if (_this.join == null) _this.join = 0; // "bevel" || "round" || "miter";
+        _this.cap = props.cap;
+        if (_this.cap == null) _this.cap = 0; // "butt" || "round" || "square";
+        _this.width = props.width;
+        if (_this.width == null) _this.width = 0;
+        return _this;
+    }
+
+    _createClass(StrokeStyle, [{
+        key: 'canDraw',
+        value: function canDraw() {
+            return _get(StrokeStyle.prototype.__proto__ || Object.getPrototypeOf(StrokeStyle.prototype), 'canDraw', this).call(this) && this.end - this.start != 0; // && this.offset < 1 && (this.end - this.start != 0);
+        }
+    }, {
+        key: '_applyStyle',
+        value: function _applyStyle(ctx, length) {
+            _get(StrokeStyle.prototype.__proto__ || Object.getPrototypeOf(StrokeStyle.prototype), '_applyStyle', this).call(this, ctx);
+            if (this.color != null) {
+                ctx.strokeStyle = this.strokeColor.color;
+            } else {
+                if (this.gradientColor != null) {
+                    ctx.strokeStyle = this.gradientColor.getGradient(ctx);
+                }
+            }
+            ctx.lineWidth = this.width;
+            ctx.lineJoin = JOIN[this.join];
+            ctx.lineCap = CAP[this.cap];
+            // 利用虚线模拟路径分段绘制
+            if (this.offset == 0 && this.start == 0 && this.end == 1) {} else {
+                if (this.end - this.start < 1) {
+                    var visibleLength = (this.end - this.start) * length;
+                    ctx.lineDashOffset = -(this.offset + this.start) * length;
+                    ctx.setLineDash([visibleLength, length - visibleLength]);
+                }
+            }
+        }
+    }, {
+        key: '_paintStyle',
+        value: function _paintStyle(ctx, path) {
+            if (path) {
+                ctx.stroke(path);
+            } else {
+                ctx.stroke();
+            }
+        }
+    }, {
+        key: 'paint',
+        value: function paint(ctx, path, length) {
+            if (!this.canDraw()) return;
+            ctx.save();
+            this._applyStyle(ctx, length);
+            this._paintStyle(ctx, path);
+            ctx.restore();
+        }
+    }, {
+        key: 'strokeColor',
+        get: function get() {
+            return this.color;
+        },
+        set: function set(value) {
+            this.color = value;
+        }
+    }]);
+
+    return StrokeStyle;
+}(_baseStyle2.default);
+
+exports.default = StrokeStyle;
 
 /***/ }),
 
@@ -2949,6 +3094,10 @@ var Path = function (_Transformable) {
         value: function _lineToNext(prePoint, nextPoint, ctx) {
             var pout = prePoint.out;
             var nin = nextPoint.in;
+            if (prePoint.type == 0 && nextPoint.type == 0) {
+                ctx.lineTo(nextPoint.x, nextPoint.y);
+                return;
+            }
             if (pout == null && nin == null) {
                 ctx.lineTo(nextPoint.x, nextPoint.y);
             } else {
@@ -3767,10 +3916,10 @@ exports.default = Shape;
 
 /***/ }),
 
-/***/ "./build/es5-graph/shapes/stroke-style.js":
-/*!************************************************!*\
-  !*** ./build/es5-graph/shapes/stroke-style.js ***!
-  \************************************************/
+/***/ "./build/es5-graph/shapes/star-path.js":
+/*!*********************************************!*\
+  !*** ./build/es5-graph/shapes/star-path.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3785,9 +3934,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _baseStyle = __webpack_require__(/*! ./base-style.js */ "./build/es5-graph/shapes/base-style.js");
+var _path = __webpack_require__(/*! ./path.js */ "./build/es5-graph/shapes/path.js");
 
-var _baseStyle2 = _interopRequireDefault(_baseStyle);
+var _path2 = _interopRequireDefault(_path);
+
+var _point = __webpack_require__(/*! ./point.js */ "./build/es5-graph/shapes/point.js");
+
+var _point2 = _interopRequireDefault(_point);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3797,96 +3950,109 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var JOIN = ['bevel', 'round', 'miter'];
-var CAP = ['butt', 'round', 'square'];
+var StarPath = function (_Path) {
+    _inherits(StarPath, _Path);
 
-var StrokeStyle = function (_BaseStyle) {
-    _inherits(StrokeStyle, _BaseStyle);
-
-    function StrokeStyle() {
+    function StarPath() {
         var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-        _classCallCheck(this, StrokeStyle);
+        _classCallCheck(this, StarPath);
 
-        var _this = _possibleConstructorReturn(this, (StrokeStyle.__proto__ || Object.getPrototypeOf(StrokeStyle)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (StarPath.__proto__ || Object.getPrototypeOf(StarPath)).call(this, props));
 
-        _this.trim = props.trim;
-        if (_this.trim == null) _this.trim = 0;
-        _this.end = props.end;
-        if (_this.end == null) _this.end = 1;
-        _this.start = props.start;
-        if (_this.start == null) _this.start = 0;
-        _this.offset = props.offset;
-        if (_this.offset == null) _this.offset = 0;
-        _this.join = props.join;
-        if (_this.join == null) _this.join = 0; // "bevel" || "round" || "miter";
-        _this.cap = props.cap;
-        if (_this.cap == null) _this.cap = 0; // "butt" || "round" || "square";
-        _this.width = props.width;
-        if (_this.width == null) _this.width = 0;
+        _this._innerRadius = props.innerRadius;
+        if (_this._innerRadius == null) _this._innerRadius = 0.5;
+        _this._starPoints = props.starPoints;
+        if (_this._starPoints == null) _this._starPoints = 5;else _this._starPoints = Math.floor(_this._starPoints);
+        _this._isClose = true;
+        _this._points = new Array(_this._starPoints * 2);
+        _this._outlinecreated = false;
+        _this._inlinecreated = false;
         return _this;
     }
 
-    _createClass(StrokeStyle, [{
-        key: 'canDraw',
-        value: function canDraw() {
-            return _get(StrokeStyle.prototype.__proto__ || Object.getPrototypeOf(StrokeStyle.prototype), 'canDraw', this).call(this) && this.end - this.start != 0; // && this.offset < 1 && (this.end - this.start != 0);
-        }
-    }, {
-        key: '_applyStyle',
-        value: function _applyStyle(ctx, length) {
-            _get(StrokeStyle.prototype.__proto__ || Object.getPrototypeOf(StrokeStyle.prototype), '_applyStyle', this).call(this, ctx);
-            if (this.color != null) {
-                ctx.strokeStyle = this.strokeColor.color;
-            } else {
-                if (this.gradientColor != null) {
-                    ctx.strokeStyle = this.gradientColor.getGradient(ctx);
+    _createClass(StarPath, [{
+        key: '_createStarPoints',
+        value: function _createStarPoints() {
+            var count = this._starPoints;
+            var delta = Math.PI * 2 / count;
+
+            var outAngleOffset = -Math.PI / 2;
+            var outIndexOffset = 0;
+
+            var inAngleOffset = outAngleOffset + delta / 2;
+            var inIndexOffset = 1;
+
+            var a = this.width / 2;
+            var a1 = a * this.innerRadius;
+            var b = this.height / 2;
+            var b1 = b * this.innerRadius;
+
+            for (var i = 0, angle = 0, index = 0; i < count; i++) {
+                if (!this._outlinecreated) {
+                    var theta = angle + outAngleOffset;
+                    var x = Math.cos(theta) * a;
+                    var y = Math.sin(theta) * b;
+                    this._points[index + outIndexOffset] = new _point2.default({ x: x, y: y, type: 0 });
                 }
-            }
-            ctx.lineWidth = this.width;
-            ctx.lineJoin = JOIN[this.join];
-            ctx.lineCap = CAP[this.cap];
-            // 利用虚线模拟路径分段绘制
-            if (this.offset == 0 && this.start == 0 && this.end == 1) {} else {
-                if (this.end - this.start < 1) {
-                    var visibleLength = (this.end - this.start) * length;
-                    ctx.lineDashOffset = -(this.offset + this.start) * length;
-                    ctx.setLineDash([visibleLength, length - visibleLength]);
+                if (!this._inlinecreated) {
+                    var _theta = angle + inAngleOffset;
+                    var _x2 = Math.cos(_theta) * a1;
+                    var _y = Math.sin(_theta) * b1;
+                    this._points[index + inIndexOffset] = new _point2.default({ x: _x2, y: _y, type: 0 });
                 }
+                angle += delta;
+                index += 2;
             }
+            this._outlinecreated = true;
+            this._inlinecreated = true;
         }
     }, {
-        key: '_paintStyle',
-        value: function _paintStyle(ctx, path) {
-            if (path) {
-                ctx.stroke(path);
-            } else {
-                ctx.stroke();
-            }
+        key: 'createPath',
+        value: function createPath(ctx, w, h) {
+            this._createStarPoints();
+            _get(StarPath.prototype.__proto__ || Object.getPrototypeOf(StarPath.prototype), 'createPath', this).call(this, ctx, w, h);
         }
     }, {
-        key: 'paint',
-        value: function paint(ctx, path, length) {
-            if (!this.canDraw()) return;
-            ctx.save();
-            this._applyStyle(ctx, length);
-            this._paintStyle(ctx, path);
-            ctx.restore();
-        }
-    }, {
-        key: 'strokeColor',
+        key: 'isClose',
         get: function get() {
-            return this.color;
+            return true;
+        }
+    }, {
+        key: 'innerRadius',
+        get: function get() {
+            return this._innerRadius;
         },
-        set: function set(value) {
-            this.color = value;
+        set: function set(r) {
+            if (this._innerRadius != r) {
+                this._innerRadius = r;
+                this._inlinecreated = false;
+                this.fireDirty();
+            }
+        }
+    }, {
+        key: 'starPoints',
+        get: function get() {
+            return this._starPoints;
+        },
+        set: function set(r) {
+            var ir = Math.floor(r);
+            if (this._starPoints != ir) {
+                this._starPoints = ir;
+
+                this._outlinecreated = false;
+                this._inlinecreated = false;
+                this._points = new Array(ir * 2);
+
+                this.fireDirty();
+            }
         }
     }]);
 
-    return StrokeStyle;
-}(_baseStyle2.default);
+    return StarPath;
+}(_path2.default);
 
-exports.default = StrokeStyle;
+exports.default = StarPath;
 
 /***/ }),
 
@@ -4658,6 +4824,7 @@ var DRP = pixelRatio();
 
 // 这是为了模拟不能生成Path2D直接绘制的效果
 var isWX = false;
+if (false) {}else isWX = false;
 
 // Legendre-Gauss abscissae with n=24 (x_i values, defined at i=n as the roots of the nth order Legendre polynomial Pn(x))
 var Tvalues = [-0.0640568928626056260850430826247450385909, 0.0640568928626056260850430826247450385909, -0.1911188674736163091586398207570696318404, 0.1911188674736163091586398207570696318404, -0.3150426796961633743867932913198102407864, 0.3150426796961633743867932913198102407864, -0.4337935076260451384870842319133497124524, 0.4337935076260451384870842319133497124524, -0.5454214713888395356583756172183723700107, 0.5454214713888395356583756172183723700107, -0.6480936519369755692524957869107476266696, 0.6480936519369755692524957869107476266696, -0.7401241915785543642438281030999784255232, 0.7401241915785543642438281030999784255232, -0.8200019859739029219539498726697452080761, 0.8200019859739029219539498726697452080761, -0.8864155270044010342131543419821967550873, 0.8864155270044010342131543419821967550873, -0.9382745520027327585236490017087214496548, 0.9382745520027327585236490017087214496548, -0.9747285559713094981983919930081690617411, 0.9747285559713094981983919930081690617411, -0.9951872199970213601799974097007368118745, 0.9951872199970213601799974097007368118745];
