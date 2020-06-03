@@ -1,8 +1,6 @@
 import Container from "./container.js";
 import utils from "./utils.js";
 import Shape from "./shapes/shape.js";
-import StrokeStyle from "./shapes/stroke-style.js";
-import FillStyle from "./shapes/fill-style.js";
 import EllipsePath from "./shapes/ellipse-path.js";
 import Animation from "../animation/animation.js";
 import AnimationPropertyKey from "../animation/animation-property-key.js";
@@ -12,6 +10,9 @@ import Group from './group.js';
 import RadicalGradientColor from "./radical-gradient-color.js";
 import LinearGradientColor from "./linear-gradient-color.js";
 import RectanglePath from "./shapes/rectangle-path.js";
+import StrokeStyle from "./shapes/paint-style/stroke-style.js";
+import FillStyle from "./shapes/paint-style/fill-style.js";
+import StarPath from "./shapes/star-path.js";
 
 export default class FlareJSONReader {
     constructor() { }
@@ -203,7 +204,6 @@ export default class FlareJSONReader {
 
             if (node.type == 'rectangle') {
                 let parent = tempstack[node.parent];
-                // ellipse的translation是以中心开始的，这里要转一下：
                 let path = new RectanglePath({
                     drawOrder: node.drawOrder,
                     x: node.translation[0],
@@ -217,6 +217,27 @@ export default class FlareJSONReader {
                     scaleY: node.scale[1],
                     opacity: node.opacity,
                     radius: node.cornerRadius,
+                });
+                tempstack[i] = path;
+                parent.addPath(path);
+            }
+
+            if (node.type == 'star') {
+                let parent = tempstack[node.parent];
+                let path = new StarPath({
+                    drawOrder: node.drawOrder,
+                    x: node.translation[0],
+                    y: node.translation[1],
+                    width: node.width,
+                    height: node.height,
+                    id: i,
+                    name: node.name,
+                    rotate: node.ratation,
+                    scaleX: node.scale[0],
+                    scaleY: node.scale[1],
+                    opacity: node.opacity,
+                    innerRadius: node.innerRadius,
+                    starPoints: node.points
                 });
                 tempstack[i] = path;
                 parent.addPath(path);

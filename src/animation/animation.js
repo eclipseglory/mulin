@@ -11,7 +11,6 @@ export default class Animation {
 
         this.keyed = [];
 
-        this.animationMap = {};
 
         this._running = false;
         this.render = props.render;
@@ -24,12 +23,18 @@ export default class Animation {
 
     get isRunning() { return this._running; }
 
+    applyAnimationState(percent) {
+        let keyed = this.keyed;
+        keyed.forEach(keyFrame => {
+            keyFrame.applyCurrent(percent);
+        });
+    }
+
     start() {
         let render = this.render;
         if (!render) return;
         if (this._running) return Promise.reject('已经开始运行了');
         let total = this.duration * this.fps / 1000;
-        let keyed = this.keyed;
         let that = this;
         return new Promise((resolve, reject) => {
             let start = render.startRAF({
@@ -43,9 +48,7 @@ export default class Animation {
                         }
                     }
                     let percent = that.refreshCount / total;
-                    keyed.forEach(keyFrame => {
-                        keyFrame.applyCurrent(percent);
-                    });
+                    that.applyAnimationState(percent);
                 },
                 afterDraw() {
                     that.refreshCount++;

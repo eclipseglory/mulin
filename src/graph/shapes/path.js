@@ -153,6 +153,10 @@ export default class Path extends Transformable {
     _lineToNext(prePoint, nextPoint, ctx) {
         let pout = prePoint.out;
         let nin = nextPoint.in;
+        if (prePoint.type == 0 && nextPoint.type == 0) {
+            ctx.lineTo(nextPoint.x, nextPoint.y);
+            return;
+        }
         if (pout == null && nin == null) {
             ctx.lineTo(nextPoint.x, nextPoint.y);
         } else {

@@ -4,7 +4,9 @@ const PI_DIV_180 = Math.PI / 180;
 const DRP = pixelRatio();
 
 // 这是为了模拟不能生成Path2D直接绘制的效果
-var isWX = __ISWX__;
+var isWX = false;
+if (typeof __ISWX__ == 'undefined') isWX = true;
+else isWX = __ISWX__;
 
 // Legendre-Gauss abscissae with n=24 (x_i values, defined at i=n as the roots of the nth order Legendre polynomial Pn(x))
 const Tvalues = [

@@ -19,8 +19,8 @@
 <script type="module">
     import Render from '../src/graph/render.js';
     import Circle from '../src/graph/shapes/circle.js';
-    import FillStyle from '../src/graph/shapes/fill-style.js';
-    import StrokeStyle from '../src/graph/shapes/stroke-style.js';
+    import FillStyle from '../src/graph/shapes/paint-style/fill-style.js';
+    import StrokeStyle from '../src/graph/shapes/paint-style/stroke-style.js';
     import Container from '../src/graph/container.js';
     import utils from '../src/graph/utils.js';
     import FlareJSONReader from '../src/graph/flare-json-reader.js';
@@ -82,7 +82,9 @@
 
 
     function fileReady(content) {
-        let containers = FlareJSONReader.read(content);
+        let json = JSON.parse(content);
+        console.log(json);
+        let containers = FlareJSONReader.readJSONObject(json);
         let container = containers[0];
         root.addChild(container.artboard);
         console.log(container);
