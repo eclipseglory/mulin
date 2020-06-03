@@ -174,7 +174,7 @@ export default class Render {
     draw(ctx) {
         if (this.keep == null) {
             // 如果不保存之前绘制结果就直接清除
-            ctx.clearRect(0, 0, this.width, this.height);
+            ctx.clearRect(0, 0, this.width * utils.DRP, this.height * utils.DRP);
         }
         ctx.lastClipRegion = null;
         ctx.save();
