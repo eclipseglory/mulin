@@ -1,15 +1,15 @@
 import Graph from "./graph.js";
 import Figure from "./figure.js";
-import ImageFigure from "./image/image_figure.js";
-import Line from "./line/line.js";
 import Circle from "./shapes/circle.js";
 import Polygon from "./shapes/polygon.js";
 import Shape from "./shapes/shape.js";
 import Rectangle from "./shapes/rectangle.js";
 import Matrix3 from "./math/matrix3.js";
 import Text from "./text/text.js";
+import Render from "./render.js";
+import FlareJSONReader from './flare-json-reader.js';
 
-const version = '0.0.1';
+const version = __VERSION__;
 const style = "color:red;background-color:yellow";
 
 
@@ -17,12 +17,8 @@ let outdefine = {
     version: version,
     Graph: Graph,
     Figure: Figure,
-    image: {
-        ImageFiguer: ImageFigure
-    },
-    line: {
-        Line: Line
-    },
+    Render: Render,
+    FlareJSONReader: FlareJSONReader,
     shapes: {
         Circle: Circle,
         Polygon: Polygon,
@@ -54,6 +50,7 @@ function definedReadOnly(maps, out) {
         });
     }
 }
-
-console.log("%c Graph(version " + version + ") by 老脸",style);
+var forWX = __ISWX__;
+var t = forWX ? ' 无Path2D版' : '';
+console.log("%c Mulin" + t + "(version " + version + ") by 老脸", style);
 export default out;

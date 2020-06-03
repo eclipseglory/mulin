@@ -16,10 +16,7 @@ import RectanglePath from "./shapes/rectangle-path.js";
 export default class FlareJSONReader {
     constructor() { }
 
-    static read(content) {
-        let obj = JSON.parse(content);
-        // DEBUG:
-        console.log(obj);
+    static readJSONObject(obj) {
         let containers = [];
 
         obj.artboards.forEach(artboard => {
@@ -41,6 +38,11 @@ export default class FlareJSONReader {
 
         });
         return containers;
+    }
+
+    static read(content) {
+        let obj = JSON.parse(content);
+        return this.readJSONObject(obj);
     }
 
     static initClips(container, tempstack) {
@@ -136,9 +138,6 @@ export default class FlareJSONReader {
         let renderObj = [];
         for (let i = 0; i < nodes.length; i++) {
             let node = nodes[i];
-            if (node.drawOrder != null) {
-                console.log(node.name, node.drawOrder);
-            }
             if (node.type == 'node') {
                 let group = new Group({
                     drawOrder: node.drawOrder,

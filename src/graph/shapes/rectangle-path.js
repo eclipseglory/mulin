@@ -61,8 +61,14 @@ export default class RectanglePath extends Path {
             return (this.width + this.height) * 2;
         } else {
             let l = (this.width + this.height) * 2;
-            l -= 8 * this.radius;
-            l += Math.PI * 2 * this.radius;
+            let min = Math.min(this.width, this.height);
+
+            let r = this.radius;
+            if (r > min / 2) {
+                r = min / 2;
+            }
+            l -= 8 * r;
+            l += Math.PI * 2 * r;
             return l;
         }
     }
