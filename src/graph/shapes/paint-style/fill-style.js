@@ -1,5 +1,4 @@
 import BaseStyle from "./base-style.js";
-import Color from "../color.js";
 
 export default class FillStyle extends BaseStyle {
     constructor(props = {}) {
