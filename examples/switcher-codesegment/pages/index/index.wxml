@@ -1,0 +1,3 @@
+<view class="intro">
+    <navigator url="/pages/cross-switcher/crossSwitcher">勾/叉 switcher</navigator>
+</view>
