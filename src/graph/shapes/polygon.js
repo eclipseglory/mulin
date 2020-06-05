@@ -1,48 +1,28 @@
 import Shape from "./shape";
+import PolygonPath from "./polygon-path";
 
 export default class Polygon extends Shape {
-    constructor(params) {
-        params = params || {};
+    constructor(params = {}) {
         super(params);
-        // 没个point是一个二维数组 0是x，1是y
-        this._close = params['close'] == null ? true : params['close'];
-        this._points = params['points'] || [];
+        this._polygonPath = new PolygonPath(params);
     }
 
-    get points() { return this._points; }
+    set width(w) { this._polygonPath.width = w; }
+    get width() { return this._polygonPath.width; }
 
-    get close() { return this._close; }
-    set close(c) {
-        if (this._close != c) {
-            this._close = c;
-            this._contentDirty = true;
-        }
+    set height(w) { this._polygonPath.height = w; }
+    get height() { return this._polygonPath.height; }
+
+    get sides() {
+        return this._polygonPath.sides;
     }
 
-    addPoint(point) {
-        this._points.push(point);
-        this._contentDirty = true;
-    }
+    set sides(s) { this._polygonPath.sides = s; }
 
-    removePointAt(index) {
-        this._points.splice(index, 1);
-        this._contentDirty = true;
-    }
+    get close() { return true; }
+
 
     canDraw() {
-        // 多边形至少3个点
-        return this._points.length >= 3 && super.canDraw();
-    }
-
-    _createShapePath(ctx, w, h) {
-        ctx.beginPath();
-        let points = this._points;
-        ctx.moveTo(points[0][0], points[0][1]);
-        for (let i = 1; i < points.length; i++) {
-            let p = points[i];
-            ctx.lineTo(p[0], p[1]);
-        }
-
-        if (this.close) { ctx.closePath(); }
+        return this.sides > 2 && super.canDraw();
     }
 }
