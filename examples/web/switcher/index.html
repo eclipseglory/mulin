@@ -6,7 +6,7 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>白天黑夜切换按钮</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <script src="../../../release/mulin.js"></script>
+    <!-- <script src="../../../release/mulin.js"></script> -->
 </head>
 
 <body>
@@ -16,8 +16,8 @@
     </div>
 </body>
 <script type="module">
-    // import FlareJSONReader from '../../../src/graph/flare-json-reader.js';
-    // import Render from '../../../src/graph/render.js';
+    import FlareJSONReader from '../../../src/graph/flare-json-reader.js';
+    import Render from '../../../src/graph/render.js';
     let night = true;
     let lock = false;
     let canvas = document.getElementById('canvas');
@@ -47,10 +47,10 @@
         }
     });
 
-    let render = new mulin.Render(document.getElementById('canvas'));
+    let render = new Render(document.getElementById('canvas'));
 
     function readContent(content) {
-        let containers = mulin.FlareJSONReader.read(content);
+        let containers = FlareJSONReader.read(content);
         let container = containers[0];
         let root = render.createRoot();
         let artboard = container.artboard;

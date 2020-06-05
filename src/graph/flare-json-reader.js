@@ -13,6 +13,8 @@ import RectanglePath from "./shapes/rectangle-path.js";
 import StrokeStyle from "./shapes/paint-style/stroke-style.js";
 import FillStyle from "./shapes/paint-style/fill-style.js";
 import StarPath from "./shapes/star-path.js";
+import PolygonPath from "./shapes/polygon-path.js";
+import TrianglePath from "./shapes/triangle-path.js";
 
 export default class FlareJSONReader {
     constructor() { }
@@ -217,6 +219,45 @@ export default class FlareJSONReader {
                     scaleY: node.scale[1],
                     opacity: node.opacity,
                     radius: node.cornerRadius,
+                });
+                tempstack[i] = path;
+                parent.addPath(path);
+            }
+
+            if (node.type == 'polygon') {
+                let parent = tempstack[node.parent];
+                let path = new PolygonPath({
+                    drawOrder: node.drawOrder,
+                    x: node.translation[0],
+                    y: node.translation[1],
+                    width: node.width,
+                    height: node.height,
+                    id: i,
+                    name: node.name,
+                    rotate: node.ratation,
+                    scaleX: node.scale[0],
+                    scaleY: node.scale[1],
+                    opacity: node.opacity,
+                    sides: node.sides,
+                });
+                tempstack[i] = path;
+                parent.addPath(path);
+            }
+
+            if (node.type == 'triangle') {
+                let parent = tempstack[node.parent];
+                let path = new TrianglePath({
+                    drawOrder: node.drawOrder,
+                    x: node.translation[0],
+                    y: node.translation[1],
+                    width: node.width,
+                    height: node.height,
+                    id: i,
+                    name: node.name,
+                    rotate: node.ratation,
+                    scaleX: node.scale[0],
+                    scaleY: node.scale[1],
+                    opacity: node.opacity,
                 });
                 tempstack[i] = path;
                 parent.addPath(path);

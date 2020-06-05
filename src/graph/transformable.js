@@ -221,6 +221,14 @@ export default class Transformable {
         })
     }
 
+    cleanChildren() {
+        this._children.forEach(child => {
+            child.parent = null;
+            child.fireWorldTransformDirty();
+        });
+        this._children.length = 0;
+    }
+
     /**
      * 添加一个绘制子节点。如果子节点已经添加到某节点下，该方法会抛出异常
      * @param {Figure} child 

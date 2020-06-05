@@ -14,7 +14,7 @@ export default class Render {
         this.width = params['canvasWidth'] || canvas._width; // 这tm才是style的大小,找大半天
         if (this.width == null) this.width = canvas.clientWidth;
         this.height = params['canvasHeight'] || canvas._height;
-        if (this.height == null) this.height = canvas.clientWidth;
+        if (this.height == null) this.height = canvas.clientHeight;
 
         // graph节点的高度和宽度不能根据pixelRatio调整
         // 调整canvas在内存的实际大小
