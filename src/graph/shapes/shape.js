@@ -124,4 +124,26 @@ export default class Shape extends Drawable {
             }
         });
     }
+
+    /**
+     * Shape是可以没有大小的，它包含多个path，所以要定位需要查看坐标是否落在了它所包含的path中
+     * @param {Number} x 
+     * @param {Number} y 
+     */
+    containsPoint(x, y, matrix) {
+        if (x == null || y == null) return null;
+        let worldMatrix = this.getWorldTransformMatrix();
+        if (matrix) {
+            worldMatrix = worldMatrix.clone();
+            worldMatrix.simpleMultiply(matrix);
+        }
+        for (let index = 0; index < this._paths.length; index++) {
+            const path = this._paths[index];
+            if (path.containsPoint(x, y, worldMatrix.clone())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

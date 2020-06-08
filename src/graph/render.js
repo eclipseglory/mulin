@@ -1,5 +1,6 @@
 import Figure from "./figure.js";
 import utils from "./utils.js";
+import Rectangle from "./shapes/rectangle.js";
 
 /**
  */
@@ -90,7 +91,7 @@ export default class Render {
         if (!this._runningAnimation) return -1;
         return this.animations.indexOf(this._runningAnimation);
     }
-
+    
     createRoot() {
         return new Figure({
             anchroX: 0, anchroY: 0,
@@ -240,7 +241,8 @@ export default class Render {
             let ctx = this.ctx;
             let that = this;
             if (this._rafUpdateId) {
-                utils.cancelAnimationFrame(this.canvas, this._rafUpdateId);
+                return;
+                // utils.cancelAnimationFrame(this.canvas, this._rafUpdateId);
             }
             this._rafUpdateId = utils.requestAnimationFrame(this.canvas, function () {
                 that.draw(ctx);

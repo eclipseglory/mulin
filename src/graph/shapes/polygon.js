@@ -25,4 +25,8 @@ export default class Polygon extends Shape {
     canDraw() {
         return this.sides > 2 && super.canDraw();
     }
+
+    getVertices() {
+        return this._polygonPath.getVertices();
+    }
 }

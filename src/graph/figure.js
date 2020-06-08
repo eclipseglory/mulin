@@ -1,5 +1,3 @@
-import Matrix3 from "./math/matrix3.js";
-import utils from "./utils.js";
 import Drawable from "./drawable.js";
 
 
@@ -11,6 +9,7 @@ export default class Figure extends Drawable {
 
     constructor(params = { anchorX: 0.5, anchorY: 0.5 }) {
         super(params);
+        this._vertices = null;
     }
 
 
@@ -43,57 +42,4 @@ export default class Figure extends Drawable {
         }
         return p;
     }
-
-    /**
-     * 坐标x和y是否在Figure的区域内。
-     * 
-     * x,y的值是一个相对于Canvas的值，对于任何Figure来说都是绝对的。
-     * Figure自身仅判断是否在{left,top,right,bottom}区域内，特殊的图形需要自己实现这一方法。
-     * 
-     * 如果x，y在Figure区域内，返回Figure对象。没有则返回Null。
-     * 如果Figure有子节点，则需要判断x，y是否在子节点内，并且返回子节点对象。
-     * @param {Number} x 
-     * @param {Number} y 
-     * @param {Matrix3} parentMatrix
-     */
-    pointInMe(x, y, parentMatrix) {
-        if (x == null || y == null) return null;
-        //计算当前Figure的WorkdMatrix：
-        let myMatrix = this._calculateTransformMatrix();
-        let worldMatrix = Matrix3.IdentityMatrix();
-        if (parentMatrix != null) {
-            Matrix3.copyFrom(parentMatrix, worldMatrix);
-            worldMatrix.multiply(myMatrix);
-        } else {
-            Matrix3.copyFrom(myMatrix, worldMatrix);
-        }
-        //计算变换后的四个顶点 (顺时针)
-        let vertex = this.getVertex();
-        for (let i = 0; i < vertex.length; i++) {
-            worldMatrix.multiplyWithVertex(vertex[i], vertex[i]);
-        }
-
-        let isInside = utils.isPointInPolygon(x, y, vertex);
-        if (!isInside) return null;
-
-        let figure = this;
-        for (let i = this._children.length - 1; i >= 0; i--) {
-            let c = this._children[i];
-            let cf = c.pointInMe(x, y, worldMatrix);
-            if (cf != null) {
-                figure = cf;
-                break; // 因为靠前的figure就一个，在后面的figure不再计算判断
-            }
-        }
-
-        return figure;
-    }
-    /**
-     * 获得原Figure的顶点数组。默认是返回Figure绘制区域的四个顶点。
-     * @returns {Array} 正常Figure的顶点，必须按照顺时针顺序组成数组放回
-     */
-    getVertex() {
-        return [[0, 0], [this.width, 0], [this.width, this.height], [0, this.height]];
-    }
-
 } 

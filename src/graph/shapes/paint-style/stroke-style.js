@@ -32,7 +32,7 @@ export default class StrokeStyle extends BaseStyle {
     }
 
     canDraw() {
-        return super.canDraw() && (this.end - this.start != 0);// && this.offset < 1 && (this.end - this.start != 0);
+        return super.canDraw() && this.width != 0 && (this.end - this.start != 0);// && this.offset < 1 && (this.end - this.start != 0);
     }
 
     _applyStyle(ctx, length) {

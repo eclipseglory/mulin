@@ -1,4 +1,5 @@
 import Matrix3 from "./math/matrix3.js";
+import utils from "./utils.js";
 
 const PI_DIV_180 = Math.PI / 180;
 
@@ -35,11 +36,15 @@ export default class Transformable {
 
         this._worldMatrix = new Matrix3();
 
+        // this._worldInverseMatrix = new Matrix3();
+
         this._parent;
 
         this._children = [];
 
         this._worldTransformDirty = true;
+
+        // this._worldTransformInverseDirty = true;
 
         this._transformDirty = true;
 
@@ -47,6 +52,7 @@ export default class Transformable {
         this._opacity = props.opacity;
         if (this._opacity == null) this._opacity = 1;
         this._opacityChange = true;
+        this._vertices = null;
     }
 
     //// 属性 //////////
@@ -205,7 +211,9 @@ export default class Transformable {
     saveTransform() { this._transformDirty = false; }
 
     fireWorldTransformDirty() {
+        this._vertices = null;
         this._worldTransformDirty = true;
+        // this._worldTransformInverseDirty = true;
         this._children.forEach(child => {
             child.fireWorldTransformDirty();
         });
@@ -317,7 +325,7 @@ export default class Transformable {
                 } else {
                     this._worldMatrix.from(pw);
                     if (!matrix.isIdentity()) {
-                        this._worldMatrix.multiply(matrix);
+                        this._worldMatrix.simpleMultiply(matrix);
                     }
                 }
             } else {
@@ -326,5 +334,73 @@ export default class Transformable {
             this.saveWorldTransform();
         }
         return this._worldMatrix;
+    }
+
+    /**
+     * 获得默认的顶点，一般只指整个绘制区域的四个顶点。
+     */
+    getRowVertices() {
+        return [[0, 0], [this.width, 0], [this.width, this.height], [0, this.height]];
+    }
+
+    /**
+     * 获得相对整个canvas的顶点位置
+     * @deprecated
+     * @param {Matrix3} matrix,这个矩阵是会被修改的，不要传引用！
+     * @returns {Array} 正常Figure的顶点，必须按照顺时针顺序组成数组放回
+     */
+    getVertices(matrix) {
+        if (this._vertices == null) {
+            this._vertices = this.getRowVertices();
+            let worldMatrix = this.getWorldTransformMatrix();
+            if (matrix) {
+                matrix.simpleMultiply(worldMatrix);
+                worldMatrix = matrix;
+            }
+            //计算变换后的四个顶点 (顺时针)
+            let vertex = this._vertices;
+            for (let i = 0; i < vertex.length; i++) {
+                worldMatrix.multiplyWithVertex(vertex[i], vertex[i]);
+            }
+        }
+        return this._vertices;
+    }
+
+    // getWorldInverseMatrix() {
+    //     if (this._worldTransformInverseDirty) {
+    //         let world = this.getWorldTransformMatrix();
+    //         this._worldInverseMatrix = world.getInvert(this._worldInverseMatrix);
+    //         this._worldTransformInverseDirty = false;
+    //     }
+    //     return this._worldInverseMatrixl
+    // }
+
+    /**
+     * 坐标x和y是否在图形的区域内。
+     * Matrix参数会被修改，传入的时候要谨慎
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Matrix3} matrix
+     */
+    containsPoint(x, y, matrix) {
+        if (x == null || y == null) return false;
+        let worldMatrix = this.getWorldTransformMatrix();
+        if (matrix) {
+            matrix.simpleMultiply(worldMatrix);
+            worldMatrix = matrix;
+        }
+        let invertMatrix = worldMatrix.getInvert();
+        let point = invertMatrix.multiplyWithVertexDatas(x, y);
+        return this.containsRelativePoint(point[0], point[1]);
+    }
+
+    /**
+     * 是否包含相对坐标，这里的xy的值必须是先对该图形
+     * @param {Number} x 
+     * @param {Number} y 
+     */
+    containsRelativePoint(x, y) {
+        let vertex = this.getRowVertices();
+        return utils.isPointInPolygon(x, y, vertex);
     }
 }

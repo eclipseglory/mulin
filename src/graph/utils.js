@@ -5,7 +5,7 @@ const DRP = pixelRatio();
 
 // 这是为了模拟不能生成Path2D直接绘制的效果
 var isWX = false;
-if (typeof __ISWX__ == 'undefined') isWX = true;
+if (typeof __ISWX__ == 'undefined') isWX = false;
 else isWX = __ISWX__;
 
 // Legendre-Gauss abscissae with n=24 (x_i values, defined at i=n as the roots of the nth order Legendre polynomial Pn(x))

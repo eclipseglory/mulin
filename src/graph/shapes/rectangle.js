@@ -1,19 +1,25 @@
-import Shape from "./shape.js";
 import RectanglePath from "./rectangle-path.js";
+import SinglePathShape from "./single-path-shape.js";
 
 
-export default class Rectangle extends Shape {
-    constructor(params) {
-        params = params || {};
+export default class Rectangle extends SinglePathShape {
+    constructor(params = {}) {
         super(params);
         let radius = params['radius'] == null ? 0 : params['radius'];
         this._rectanglePath = new RectanglePath({
-            anchorX: 0.5, anchorY: 0.5,
             radius: radius,
             width: this.width,
             height: this.height
         })
         this.addPath(this._rectanglePath);
+    }
+
+    set startX(x) {
+        this._rectanglePath.startX = x;
+    }
+
+    set startY(y) {
+        this._rectanglePath.startY = y;
     }
 
     get width() {

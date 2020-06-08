@@ -37,4 +37,17 @@ export default class EllipsePath extends Path {
             return Math.PI * 2 * Math.min(a, b) + 4 * (Math.abs(a - b));
         }
     }
+
+    getRowVertices() {
+        let a = this.width / 2;
+        let b = this.height / 2;
+        return [[-a, -b], [a, -b], [a, b], [-a, b]];
+    }
+
+    containsRelativePoint(x, y) {
+        let a = this.width / 2;
+        let b = this.height / 2;
+        let v = ((x * x) / (a * a)) + ((y * y) / (b * b));
+        return v <= 1;
+    }
 }

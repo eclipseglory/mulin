@@ -206,4 +206,14 @@ export default class Path extends Transformable {
             }
         }
     }
+
+    getRowVertices() {
+        // 按道理说，贝塞尔曲线之类不能按照这种方法来返回围城shape的顶点，但为了计算快，则直接采用直连的方式
+        let vertices = [];
+        this._points.forEach(points => {
+            vertices.push([point.x, point.y]);
+        })
+        return vertices;
+    }
+
 }

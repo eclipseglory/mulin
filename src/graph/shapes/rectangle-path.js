@@ -8,6 +8,8 @@ export default class RectanglePath extends Path {
         this._dirty = true;
         this._radius = props.radius;
         if (this._radius == null) this._radius = 0;
+        this.startX = 0.5;
+        this.startY = 0.5;
     }
 
     get isClose() { return true; }
@@ -20,16 +22,12 @@ export default class RectanglePath extends Path {
         }
     }
 
-    /**
-     * 这要以中心为原点
-     * @param {*} ctx 
-     * @param {*} w 
-     * @param {*} h 
-     */
-    createPath(ctx, w, h) {
+    _createRectanglePath(ctx, left, top, right, bottom) {
+        let w = Math.abs(right - left);
+        let h = Math.abs(bottom - top);
         if (this.radius == 0) {
             // ctx.moveTo(-w / 2, -h / 2);
-            ctx.rect(-w / 2, -h / 2, w, h);
+            ctx.rect(left, top, right - left, bottom - top);
             ctx.closePath();
         }
         else {
@@ -39,10 +37,6 @@ export default class RectanglePath extends Path {
             if (r > min / 2) {
                 r = min / 2;
             }
-            let left = -w / 2;
-            let top = -h / 2;
-            let right = left + w;
-            let bottom = top + h;
             ctx.moveTo(left + r, top);
             ctx.lineTo(right - r, top);
             ctx.arc(right - r, top + r, r, -HALF_PI, 0);
@@ -56,12 +50,28 @@ export default class RectanglePath extends Path {
         }
     }
 
+    /**
+     * 这要以中心为原点
+     * @param {*} ctx 
+     * @param {*} w 
+     * @param {*} h 
+     */
+    createPath(ctx, w, h) {
+        let left = -w * this.startX;
+        let top = -h * this.startY;
+        let right = left + w;
+        let bottom = top + h;
+        this._createRectanglePath(ctx, left, top, right, bottom);
+    }
+
     calculatePathLength() {
+        let w = Math.abs(this.width);
+        let h = Math.abs(this.height);
         if (this.radius == 0) {
-            return (this.width + this.height) * 2;
+            return (w + h) * 2;
         } else {
-            let l = (this.width + this.height) * 2;
-            let min = Math.min(this.width, this.height);
+            let l = (w + h) * 2;
+            let min = Math.min(w, h);
 
             let r = this.radius;
             if (r > min / 2) {
@@ -71,5 +81,15 @@ export default class RectanglePath extends Path {
             l += Math.PI * 2 * r;
             return l;
         }
+    }
+
+    getRowVertices() {
+        let w = this.width;
+        let h = this.height;
+        let left = -w * this.startX;
+        let top = -h * this.startY;
+        let right = left + w;
+        let bottom = top + h;
+        return [[left, top], [right, top], [right, bottom], [left, bottom]];
     }
 }
