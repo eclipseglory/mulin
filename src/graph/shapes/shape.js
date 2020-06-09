@@ -19,6 +19,10 @@ export default class Shape extends Drawable {
 
     /// 方法 ////
 
+    getPath(index) {
+        return this._paths[index];
+    }
+
     getShapePath(ctx) {
         if (this.isDirty()) {
             // 这些操作全是因为微信没有path2d造成的
@@ -95,23 +99,26 @@ export default class Shape extends Drawable {
     }
 
     drawSelf(ctx, w, h) {
-        let path2d = this.getShapePath(ctx);
+        let path = this.getSelfPath(ctx, w, h);
+        this.fillStyles.forEach(fillStyle => {
+            fillStyle.paint(ctx, path);
+        });
+        if (this.strokeStyles.length > 0) {
+            let length = this.getShapeLength();
+            this.strokeStyles.forEach(strokeStyle => {
+                strokeStyle.paint(ctx, path, length);
+            })
+        }
+    }
 
+    getSelfPath(ctx, w, h) {
+        let path2d = this.getShapePath(ctx);
         if (path2d == null) {
             // 没有path就硬画
             ctx.beginPath();// 清空之前的Path栈
             this.drawPaths(ctx, w, h);
         }
-
-        this.fillStyles.forEach(fillStyle => {
-            fillStyle.paint(ctx, this._path2d);
-        });
-        if (this.strokeStyles.length > 0) {
-            let length = this.getShapeLength();
-            this.strokeStyles.forEach(strokeStyle => {
-                strokeStyle.paint(ctx, this._path2d, length);
-            })
-        }
+        return path2d;
     }
 
     createSubPath2D(ctx) {
@@ -139,11 +146,37 @@ export default class Shape extends Drawable {
         }
         for (let index = 0; index < this._paths.length; index++) {
             const path = this._paths[index];
-            if (path.containsPoint(x, y, worldMatrix.clone())) {
+            if (path.containsPoint(x, y, worldMatrix)) {
                 return true;
             }
         }
         return false;
+    }
+
+    getBounds() {
+        let left, right, top, bottom;
+        if (this._paths.length != 0) {
+            let p = this.getPath(0);
+            let bounds = p.getBounds();
+            left = bounds[0];
+            right = bounds[2];
+            top = bounds[1];
+            bottom = bounds[3];
+            for (let i = 1; i < this._paths.length; i++) {
+                let path = this.getPath(i);
+                let b = path.getBounds();
+                left = Math.min(left, b[0]);
+                right = Math.max(right, b[2]);
+                top = Math.min(top, b[1]);
+                bottom = Math.max(bottom, b[3]);
+            }
+            let matrix = this.getWorldTransformMatrix();
+            let p1 = matrix.multiplyWithVertexDatas(left, top);
+            let p2 = matrix.multiplyWithVertexDatas(right, bottom);
+            return [p1[0], p1[1], p2[0], p2[1]];
+        } else {
+            return null;
+        }
     }
 
 }

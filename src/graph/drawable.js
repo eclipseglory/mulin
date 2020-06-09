@@ -107,17 +107,16 @@ export default class Drawable extends Transformable {
         return false;
     }
 
-    draw(context) {
+    draw(context, clip = true) {
         if (!this.canDraw()) return;
-        if (this.name == 'star_fall_1') {
-            console.log();
-        }
-        // 剪切区域保存给兄弟节点,子节点会继承剪切区域，并且通过对比查看是否需要剪切
-        let notEmpty = this.clip(context);
-        if (!notEmpty) {
-            // 如果剪切区域是一个scale为0的区域，则说明图形绘制在一个没有大小的区域内
-            // 则不需要绘制
-            return;
+        if (clip) {
+            // 剪切区域保存给兄弟节点,子节点会继承剪切区域，并且通过对比查看是否需要剪切
+            let notEmpty = this.clip(context);
+            if (!notEmpty) {
+                // 如果剪切区域是一个scale为0的区域，则说明图形绘制在一个没有大小的区域内
+                // 则不需要绘制
+                return;
+            }
         }
         let tempRegion = context.lastClipRegion;
 
@@ -128,15 +127,24 @@ export default class Drawable extends Transformable {
             this.applyDrawingStates(context);
             this.drawSelf(context, this.width, this.height);
             context.restore();
-            this.drawChildren(context);
+            this.drawChildren(context, clip);
         }
 
         context.lastClipRegion = tempRegion;
     }
 
-    drawChildren(context) {
+    /**
+     * 该方法提供给非本canvas的context使用。一般是建立一个path，外部context自行填充或者描边
+     * @param {CanvasRenderingContext2D} ctx 
+     * @param {Number} w 
+     * @param {Number} h 
+     */
+    getSelfPath(ctx, w, h) {
+    }
+
+    drawChildren(context, clip) {
         this._children.forEach(child => {
-            child.draw(context);
+            child.draw(context, clip);
         });
     }
 

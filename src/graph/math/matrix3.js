@@ -166,6 +166,10 @@ export default class Matrix3 {
         return this;
     }
 
+    invert() {
+        return this.getInvert(this);
+    }
+
     getInvert(outMatrix = new Matrix3()) {
         let out = outMatrix.data;
         let a = this.data;

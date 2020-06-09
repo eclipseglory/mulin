@@ -15,6 +15,7 @@ import FillStyle from "./shapes/paint-style/fill-style.js";
 import StarPath from "./shapes/star-path.js";
 import PolygonPath from "./shapes/polygon-path.js";
 import TrianglePath from "./shapes/triangle-path.js";
+import Rectangle from "./shapes/rectangle.js";
 
 export default class FlareJSONReader {
     constructor() { }
@@ -206,6 +207,24 @@ export default class FlareJSONReader {
 
             if (node.type == 'rectangle') {
                 let parent = tempstack[node.parent];
+                // tempstack[node.parent] = new Rectangle({
+                //     drawOrder: node.drawOrder,
+                //     x: node.translation[0],
+                //     y: node.translation[1],
+                //     width: node.width,
+                //     height: node.height,
+                //     id: i,
+                //     name: parent.name,
+                //     rotate: node.ratation,
+                //     scaleX: node.scale[0],
+                //     scaleY: node.scale[1],
+                //     opacity: node.opacity,
+                //     radius: node.cornerRadius,
+                // });
+                // let rectPath = tempstack[node.parent].getPath(0);
+                // rectPath.drawOrder = node.drawOrder;
+                // rectPath.id = i;
+                // rectPath.name = node.name;
                 let path = new RectanglePath({
                     drawOrder: node.drawOrder,
                     x: node.translation[0],

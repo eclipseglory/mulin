@@ -48,7 +48,7 @@ export default class StrokeStyle extends BaseStyle {
         ctx.lineJoin = JOIN[this.join];
         ctx.lineCap = CAP[this.cap];
         // 利用虚线模拟路径分段绘制
-        if (this.offset == 0 && this.start == 0 && this.end == 1) {
+        if (length == null || (this.offset == 0 && this.start == 0 && this.end == 1)) {
 
         } else {
             if (this.end - this.start < 1) {

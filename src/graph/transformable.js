@@ -53,6 +53,8 @@ export default class Transformable {
         if (this._opacity == null) this._opacity = 1;
         this._opacityChange = true;
         this._vertices = null;
+
+        this._bounds = null;
     }
 
     //// 属性 //////////
@@ -212,6 +214,7 @@ export default class Transformable {
 
     fireWorldTransformDirty() {
         this._vertices = null;
+        this._bounds = null;
         this._worldTransformDirty = true;
         // this._worldTransformInverseDirty = true;
         this._children.forEach(child => {
@@ -377,7 +380,6 @@ export default class Transformable {
 
     /**
      * 坐标x和y是否在图形的区域内。
-     * Matrix参数会被修改，传入的时候要谨慎
      * @param {Number} x 
      * @param {Number} y 
      * @param {Matrix3} matrix
@@ -386,12 +388,26 @@ export default class Transformable {
         if (x == null || y == null) return false;
         let worldMatrix = this.getWorldTransformMatrix();
         if (matrix) {
-            matrix.simpleMultiply(worldMatrix);
-            worldMatrix = matrix;
+            worldMatrix = worldMatrix.clone();
+            worldMatrix.simpleMultiply(matrix);
         }
         let invertMatrix = worldMatrix.getInvert();
         let point = invertMatrix.multiplyWithVertexDatas(x, y);
         return this.containsRelativePoint(point[0], point[1]);
+    }
+
+    getDrawable(x, y, matrix) {
+        if (x == null || y == null) return;
+        if (this.containsPoint(x, y, matrix)) {
+            for (let i = this._children.length - 1; i >= 0; i--) {
+                let child = this._children[i];
+                let d = child.getDrawable(x, y, matrix);
+                if (d) return d;
+            }
+            return this;
+        } else {
+            return;
+        }
     }
 
     /**
@@ -402,5 +418,26 @@ export default class Transformable {
     containsRelativePoint(x, y) {
         let vertex = this.getRowVertices();
         return utils.isPointInPolygon(x, y, vertex);
+    }
+
+    getBounds() {
+        if (this._bounds == null) {
+            let vertices = this.getVertices();
+            let left, right, top, bottom;
+
+            vertices.forEach(vertex => {
+                if (left == null) left = vertex[0];
+                if (right == null) right = vertex[0];
+                if (top == null) top = vertex[1];
+                if (bottom == null) bottom = vertex[1];
+
+                left = Math.min(left, vertex[0]);
+                right = Math.max(right, vertex[0]);
+                top = Math.min(top, vertex[1]);
+                bottom = Math.max(bottom, vertex[1]);
+            });
+            this._bounds = [left, top, right, bottom];
+        }
+        return this._bounds;
     }
 }

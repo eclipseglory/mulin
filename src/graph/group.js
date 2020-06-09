@@ -20,4 +20,15 @@ export default class Group extends Drawable {
         }
         return false;
     }
+
+    getDrawable(x, y, matrix) {
+        if (x == null || y == null) return null;
+        for (let i = this._children.length - 1; i >= 0; i--) {
+            let c = this._children[i];
+            if (c.containsPoint(x, y, matrix)) {
+                return c.getDrawable(x, y, matrix);
+            }
+        }
+        return null;
+    }
 }

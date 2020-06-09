@@ -91,7 +91,7 @@ export default class Render {
         if (!this._runningAnimation) return -1;
         return this.animations.indexOf(this._runningAnimation);
     }
-    
+
     createRoot() {
         return new Figure({
             anchroX: 0, anchroY: 0,
@@ -172,6 +172,10 @@ export default class Render {
         });
     }
 
+    cleanGraph() {
+        this.ctx.clearRect(0, 0, this.width * utils.DRP, this.height * utils.DRP);
+    }
+
     draw(ctx) {
         if (this.keep == null) {
             // 如果不保存之前绘制结果就直接清除
@@ -237,6 +241,7 @@ export default class Render {
      * @param {Boolean} raf 默认值true
      */
     update(raf = true, afterUpdate) {
+        if (this.rAFisRunning) return;
         if (raf) {
             let ctx = this.ctx;
             let that = this;
