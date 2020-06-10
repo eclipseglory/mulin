@@ -169,7 +169,11 @@ export default class Matrix3 {
     invert() {
         return this.getInvert(this);
     }
-
+    /**
+     * 获得逆矩阵。
+     * @todo 这个方法要修改成6个数据的那种，减少一些计算量
+     * @param {Matrix3} outMatrix 
+     */
     getInvert(outMatrix = new Matrix3()) {
         let out = outMatrix.data;
         let a = this.data;

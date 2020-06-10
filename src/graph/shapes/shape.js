@@ -1,5 +1,6 @@
 import Drawable from "../drawable.js";
 import utils from "../utils.js";
+import Matrix3 from "../math/matrix3.js";
 
 /**
  * 几回图形绘制基类
@@ -13,6 +14,7 @@ export default class Shape extends Drawable {
         // this.strokeStyle = props.strokeStyle;
         this._path2d;
         this._paths = [];
+        this._verticesArray = null;
     }
 
     //// 属性 ////
@@ -25,6 +27,7 @@ export default class Shape extends Drawable {
 
     getShapePath(ctx) {
         if (this.isDirty()) {
+            this._verticesArray = null;
             // 这些操作全是因为微信没有path2d造成的
             this._path2d = utils.createPath2D(ctx.wx_canvas);//ctx.wx_canvas.createPath2D();
             if (this._path2d != null) {
@@ -33,6 +36,11 @@ export default class Shape extends Drawable {
             this.saveDirty();
         }
         return this._path2d;
+    }
+
+    fireWorldTransformDirty() {
+        super.fireWorldTransformDirty();
+        this._verticesArray = null;
     }
 
     addFillStyle(style) {
@@ -67,13 +75,16 @@ export default class Shape extends Drawable {
     }
 
     addPath(path) {
-        if (this._paths.indexOf(path) == -1)
+        if (this._paths.indexOf(path) == -1) {
             this._paths.push(path);
+            this._verticesArray = null;
+        }
     }
 
     removePathAt(index) {
         if (index < 0 || index > this._paths.length - 1) return;
         this._paths.splice(index, 1);
+        this._verticesArray = null;
     }
 
     removePath(path) {
@@ -132,21 +143,30 @@ export default class Shape extends Drawable {
         });
     }
 
+    _getTestStrokeWidth() {
+        if (this.strokeStyles.length == 0) return 10;
+        let style = this.strokeStyles[0];
+        return Math.max(style.width, 10);
+    }
+
     /**
      * Shape是可以没有大小的，它包含多个path，所以要定位需要查看坐标是否落在了它所包含的path中
      * @param {Number} x 
      * @param {Number} y 
      */
-    containsPoint(x, y, matrix) {
+    containsPoint(ctx, x, y, matrix, strokeWidth) {
         if (x == null || y == null) return null;
+        if (!ctx) return super.containsPoint(ctx, x, y, matrix, strokeWidth);
         let worldMatrix = this.getWorldTransformMatrix();
         if (matrix) {
-            worldMatrix = worldMatrix.clone();
-            worldMatrix.simpleMultiply(matrix);
+            matrix = matrix.clone();
+            matrix.simpleMultiply(worldMatrix);
+            worldMatrix = matrx;
         }
+        // 因为并不知道path是不是都是close的，所以直接让path判断
         for (let index = 0; index < this._paths.length; index++) {
             const path = this._paths[index];
-            if (path.containsPoint(x, y, worldMatrix)) {
+            if (path.containsPoint(ctx, x, y, worldMatrix, this._getTestStrokeWidth())) {
                 return true;
             }
         }
@@ -177,6 +197,25 @@ export default class Shape extends Drawable {
         } else {
             return null;
         }
+    }
+
+    getVertices() {
+        if (this._verticesArray == null || this.isDirty()) {
+            this._verticesArray = [];
+            let matrix = this.getWorldTransformMatrix();
+            let tempMatrix = new Matrix3();
+            this._paths.forEach(path => {
+                let vertices = path.getRowVertices();
+                let m = path.getTransformMatrix();
+                tempMatrix.from(matrix);
+                tempMatrix.simpleMultiply(m);
+                vertices.forEach(vertex => {
+                    tempMatrix.multiplyWithVertex(vertex, vertex);
+                })
+                this._verticesArray.push(vertices);
+            })
+        }
+        return this._verticesArray;
     }
 
 }

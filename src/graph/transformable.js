@@ -349,7 +349,7 @@ export default class Transformable {
     /**
      * 获得相对整个canvas的顶点位置
      * @deprecated
-     * @param {Matrix3} matrix,这个矩阵是会被修改的，不要传引用！
+     * @param {Matrix3} matrix
      * @returns {Array} 正常Figure的顶点，必须按照顺时针顺序组成数组放回
      */
     getVertices(matrix) {
@@ -357,6 +357,7 @@ export default class Transformable {
             this._vertices = this.getRowVertices();
             let worldMatrix = this.getWorldTransformMatrix();
             if (matrix) {
+                matrix = matrix.clone();
                 matrix.simpleMultiply(worldMatrix);
                 worldMatrix = matrix;
             }
@@ -378,30 +379,51 @@ export default class Transformable {
     //     return this._worldInverseMatrixl
     // }
 
+
+    /**
+     * 返回一个描边宽度。
+     * 该方法是为了测试点是否在边上而故意放大描边宽度的参数的函数
+     */
+    _getTestStrokeWidth() {
+        return 10;
+    }
+
     /**
      * 坐标x和y是否在图形的区域内。
+     * 这里没有直接使用CanvasRenderingContext2D的 ``isPointInPath`` 或者 ``isPointInStroke``的方法，
+     * 因为子类不一定都具有path，并且transformable类也没有提供对应的接口，所以采用了利用多边形顶点判断方法。
+     * 如果子类有path2d，则可以修改该方法
+     * @param {CanvasRenderingContext2D} ctx
      * @param {Number} x 
      * @param {Number} y 
      * @param {Matrix3} matrix
      */
-    containsPoint(x, y, matrix) {
+    containsPoint(ctx, x, y, matrix, strokeWidth = this._getTestStrokeWidth()) {
         if (x == null || y == null) return false;
         let worldMatrix = this.getWorldTransformMatrix();
         if (matrix) {
-            worldMatrix = worldMatrix.clone();
-            worldMatrix.simpleMultiply(matrix);
+            matrix = matrix.clone();
+            matrix.simpleMultiply(worldMatrix);
+            worldMatrix = matrix;
         }
         let invertMatrix = worldMatrix.getInvert();
         let point = invertMatrix.multiplyWithVertexDatas(x, y);
-        return this.containsRelativePoint(point[0], point[1]);
+        return this.containsRelativePoint(ctx, point[0], point[1], strokeWidth);
     }
 
-    getDrawable(x, y, matrix) {
+    /**
+     * 获取坐标x,y在该图形内的最顶层的子图形
+     * @param {CanvasRenderContext2D} ctx 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Matrix3} matrix 
+     */
+    getDrawable(ctx, x, y, matrix) {
         if (x == null || y == null) return;
-        if (this.containsPoint(x, y, matrix)) {
+        if (this.containsPoint(ctx, x, y, matrix)) {
             for (let i = this._children.length - 1; i >= 0; i--) {
                 let child = this._children[i];
-                let d = child.getDrawable(x, y, matrix);
+                let d = child.getDrawable(ctx, x, y, matrix);
                 if (d) return d;
             }
             return this;
@@ -415,7 +437,7 @@ export default class Transformable {
      * @param {Number} x 
      * @param {Number} y 
      */
-    containsRelativePoint(x, y) {
+    containsRelativePoint(ctx, x, y, strokeWidth = this._getTestStrokeWidth()) {
         let vertex = this.getRowVertices();
         return utils.isPointInPolygon(x, y, vertex);
     }

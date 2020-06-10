@@ -216,4 +216,29 @@ export default class Path extends Transformable {
         return vertices;
     }
 
+    containsRelativePoint(ctx, x, y, lineWidth) {
+        if (ctx == null) return super.containsRelativePoint(ctx, x, y);
+        let path = this.getPath2D(ctx);
+        if (this.isClose) {
+            // 如果是围成了一个封闭图形，则看是不是在图形内
+            if (path) {
+                return ctx.isPointInPath(path, x, y);
+            } else {
+                return ctx.isPointInPath(x, y);
+            }
+        } else {
+            // 如果没有围成图形，看是不是在边上
+            let contains = false;
+            ctx.save();
+            ctx.lineWidth = lineWidth;
+            if (path) {
+                contains = ctx.isPointInPath(path, x, y);
+            } else {
+                contains = ctx.isPointInPath(x, y);
+            }
+            ctx.restore();
+            return contains;
+        }
+    }
+
 }

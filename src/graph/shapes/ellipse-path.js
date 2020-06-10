@@ -44,10 +44,15 @@ export default class EllipsePath extends Path {
         return [[-a, -b], [a, -b], [a, b], [-a, b]];
     }
 
-    containsRelativePoint(x, y) {
-        let a = this.width / 2;
-        let b = this.height / 2;
-        let v = ((x * x) / (a * a)) + ((y * y) / (b * b));
-        return v <= 1;
+    containsRelativePoint(ctx, x, y, strokeWidth) {
+        if (this.isClose) {
+            // 这样是否要快一些呢？
+            let a = this.width / 2;
+            let b = this.height / 2;
+            let v = ((x * x) / (a * a)) + ((y * y) / (b * b));
+            return v <= 1;
+        } else {
+            return super.containsRelativePoint(ctx, x, y, strokeWidth);
+        }
     }
 }
