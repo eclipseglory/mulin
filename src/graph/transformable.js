@@ -53,20 +53,25 @@ export default class Transformable {
         if (this._opacity == null) this._opacity = 1;
         this._opacityChange = true;
         this._vertices = null;
-
+        this._globalOpacity = this._opacity;
         this._bounds = null;
     }
 
     //// 属性 //////////
 
     get opacity() {
+        return this._opacity;
+    }
+
+    get globalOpacity() {
+        if (!this._parent) return this._opacity;
         if (this._opacityChange) {
             if (this._parent) {
-                this._opacity *= this._parent.opacity;
+                this._globalOpacity = this._opacity * this._parent.globalOpacity;
             }
             this._opacityChange = false;
         }
-        return this._opacity;
+        return this._globalOpacity;
     }
 
     set opacity(v) {
@@ -75,6 +80,7 @@ export default class Transformable {
                 child._opacityChange = true;
             });
             this._opacity = v;
+            this._opacityChange = true;
         }
     }
 

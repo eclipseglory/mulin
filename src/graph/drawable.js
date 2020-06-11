@@ -34,7 +34,7 @@ export default class Drawable extends Transformable {
     }
 
     applyDrawingStates(context) {
-        context.globalAlpha = this.opacity;
+        context.globalAlpha = this.globalOpacity;
         context.globalCompositeOperation = this.blendMode;
     }
 
