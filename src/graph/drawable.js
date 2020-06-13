@@ -33,6 +33,11 @@ export default class Drawable extends Transformable {
         return this.opacity != 0 && this.visible && this.scaleX != 0 && this.scaleY != 0;
     }
 
+    getDrawable(ctx, x, y, matrix) {
+        if (!this.canDraw()) return false;
+        return super.getDrawable(ctx, x, y, matrix);
+    }
+
     applyDrawingStates(context) {
         context.globalAlpha = this.globalOpacity;
         context.globalCompositeOperation = this.blendMode;

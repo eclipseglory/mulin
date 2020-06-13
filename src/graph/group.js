@@ -6,14 +6,45 @@ import utils from "./utils.js";
 export default class Group extends Drawable {
     constructor(props = { anchorX: 0, anchorY: 0 }) {
         super(props);
-        this.strokeStyle = new StrokeStyle({
+        this.strokeStyles = [];
+        this.fillStyles = [];
+        this.addStrokeStyle(new StrokeStyle({
             color: [60, 60, 60],
             width: 2,
-            join: 2
-        })
+            join: 1
+        }));
         this._nodeSize = 20;
         this.path;
     }
+
+    addFillStyle(style) {
+        if (this.fillStyles.indexOf(style) == -1)
+            this.fillStyles.push(style);
+    }
+
+    addStrokeStyle(style) {
+        if (this.strokeStyles.indexOf(style) == -1)
+            this.strokeStyles.push(style);
+    }
+
+    removeFillStyle(style) {
+        this.removeFillStyleAt(this.fillStyles.indexOf(style));
+    }
+
+    removeFillStyleAt(index) {
+        if (index < 0 || index > this.fillStyles.length - 1) return;
+        this.fillStyles.splice(index, 1);
+    }
+
+    removeStrokeStyle(style) {
+        this.removeStrokeStyleAt(this.strokeStyles.indexOf(style));
+    }
+
+    removeStrokeStyleAt(index) {
+        if (index < 0 || index > this.strokeStyles.length - 1) return;
+        this.strokeStyles.splice(index, 1);
+    }
+
 
     get nodeSize() {
         return this._nodeSize;
@@ -48,6 +79,7 @@ export default class Group extends Drawable {
                 worldMatrix = matrix;
             }
             let invertMatrix = worldMatrix.getInvert();
+            if (invertMatrix == null) return null;
             let point = invertMatrix.multiplyWithVertexDatas(x1, y1);
             let r = this.nodeSize / 2;
             if (point[0] >= -r && point[1] >= -r && point[0] <= r && point[1] <= r)
@@ -110,6 +142,11 @@ export default class Group extends Drawable {
     drawSelf(ctx, w, h) {
         if (!ctx.drawGroupNode) return;
         let path = this.getSelfPath(ctx);
-        this.strokeStyle.paint(ctx, path);
+        this.fillStyles.forEach(fillStyle => {
+            fillStyle.paint(ctx, path);
+        });
+        this.strokeStyles.forEach(strokeStyle => {
+            strokeStyle.paint(ctx, path);
+        })
     }
 }

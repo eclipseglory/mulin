@@ -232,9 +232,9 @@ export default class Path extends Transformable {
             ctx.save();
             ctx.lineWidth = lineWidth;
             if (path) {
-                contains = ctx.isPointInPath(path, x, y);
+                contains = ctx.isPointInStroke(path, x, y);
             } else {
-                contains = ctx.isPointInPath(x, y);
+                contains = ctx.isPointInStroke(x, y);
             }
             ctx.restore();
             return contains;

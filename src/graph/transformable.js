@@ -246,6 +246,25 @@ export default class Transformable {
         this._children.length = 0;
     }
 
+    insertChild(child, index) {
+        if (index == this.children.length) {
+            this.children.push(child);
+        } else {
+            if (index > this.children.length - 1) {
+                this.children[index] = child;
+            } else {
+                this.children.push(child);
+                for (let i = this.children.length - 1; i > index; i--) {
+                    let temp = this.children[i];
+                    this.children[i] = this.children[i - 1];
+                    this.children[i - 1] = temp;
+                }
+            }
+        }
+        child.parent = this;
+        child.fireWorldTransformDirty();
+    }
+
     /**
      * 添加一个绘制子节点。如果子节点已经添加到某节点下，该方法会抛出异常
      * @param {Figure} child 
@@ -291,20 +310,37 @@ export default class Transformable {
         }
         let matrix = this._matrix;
         if (this.isTransformDirty()) {
-            matrix.identity();
-            matrix = matrix.translate(this.x, this.y);
-            let tx = this.anchorX * this.width;
-            let ty = this.anchorY * this.height;
-            if (this.rotation !== 0) {
-                matrix.translate(tx, ty).rotate(this.rotation).translate(-tx, -ty);
-            }
-
-            if (this.scaleX !== 1 || this.scaleY !== 1) {
-                matrix.scale(this.scaleX, this.scaleY).translate(tx / this.scaleX - tx, ty / this.scaleY - ty);
-            }
+            matrix = this.calculateTransformableMatrix(this, this._matrix);
             this.saveTransform(); //计算完后设置为false避免下次计算
         }
         return matrix;
+    }
+
+    /**
+     * 计算基于当前图形的锚点进行变换后得到的变换矩阵
+     * @param {Object} pose 
+     * @param {Matrix3} out 
+     */
+    calculateTransformableMatrix(pose = { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }, out = new Matrix3()) {
+        let x = pose.x;
+        let y = pose.y;
+        let rotation = pose.rotation;
+        let scaleX = pose.scaleX;
+        let scaleY = pose.scaleY;
+        if (scaleX == 0 || scaleY == 0) {
+            return null;
+        }
+        let matrix = out.identity();
+        matrix = matrix.translate(x, y);
+        let tx = this.anchorX * this.width;
+        let ty = this.anchorY * this.height;
+        if (rotation !== 0) {
+            matrix.translate(tx, ty).rotate(rotation).translate(-tx, -ty);
+        }
+        if (scaleX !== 1 || scaleY !== 1) {
+            matrix.scale(scaleX, scaleY).translate(tx / scaleX - tx, ty / scaleY - ty);
+        }
+        return out;
     }
 
     /**
@@ -406,6 +442,19 @@ export default class Transformable {
      */
     containsPoint(ctx, x, y, matrix, strokeWidth = this._getTestStrokeWidth()) {
         if (x == null || y == null) return false;
+        let point = this.convertWorldPosition(x, y, matrix);
+        if (point == null) return false
+        return this.containsRelativePoint(ctx, point[0], point[1], strokeWidth);
+    }
+
+    /**
+     * 将世界坐标转换成本图形为基础坐标系的坐标点
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Matrix3} matrix 
+     */
+    convertWorldPosition(x, y, matrix) {
+        if (x == null || y == null) return null;
         let worldMatrix = this.getWorldTransformMatrix();
         if (matrix) {
             matrix = matrix.clone();
@@ -413,8 +462,8 @@ export default class Transformable {
             worldMatrix = matrix;
         }
         let invertMatrix = worldMatrix.getInvert();
-        let point = invertMatrix.multiplyWithVertexDatas(x, y);
-        return this.containsRelativePoint(ctx, point[0], point[1], strokeWidth);
+        if (invertMatrix == null) return null;
+        return invertMatrix.multiplyWithVertexDatas(x, y);
     }
 
     /**
@@ -425,6 +474,7 @@ export default class Transformable {
      * @param {Matrix3} matrix 
      */
     getDrawable(ctx, x, y, matrix) {
+        if (this.opacity == 0) return;
         if (x == null || y == null) return;
         if (this.containsPoint(ctx, x, y, matrix)) {
             for (let i = this._children.length - 1; i >= 0; i--) {

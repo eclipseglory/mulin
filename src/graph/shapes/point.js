@@ -5,6 +5,7 @@ export default class Point {
         this._x = props.x;
         this._y = props.y;
         this.type = props.type;
+        if (this.type == null) this.type = 0;
         this._in = props.in;
         this._out = props.out;
         this._radius = props.radius;
