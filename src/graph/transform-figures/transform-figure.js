@@ -32,11 +32,9 @@ export default class TransformFigure extends Drawable {
         this.rotateFigure.y = Math.sin(- Math.PI / 2) * (this.width / 2);
         this.addChild(this.rotateFigure);
         this.xAxis = new TransformArrow();
-        // this.xAxis.fillStyle.color = [32, 64, 81];
         this.addChild(this.xAxis);
         this.yAxis = new TransformArrow();
         this.yAxis.rotation = Math.PI / 2;
-        // this.yAxis.fillStyle.color.color = [119, 216, 216];
         this.addChild(this.yAxis);
     }
 
@@ -76,15 +74,15 @@ export default class TransformFigure extends Drawable {
     }
 
     drawSelf(ctx, w, h) {
-        let path = this.getSelfPath(ctx, w, h);
-        if (!path) {
-            ctx.beginPath();
-            ctx.save();
-            ctx.rotate(START_RADIAN);
-            this.createPath(ctx, w, h);
-            ctx.restore();
-        }
-        this.fillStyle.paint(ctx, path);
+        // let path = this.getSelfPath(ctx, w, h);
+        // if (!path) {
+        //     ctx.beginPath();
+        //     ctx.save();
+        //     ctx.rotate(START_RADIAN);
+        //     this.createPath(ctx, w, h);
+        //     ctx.restore();
+        // }
+        // this.fillStyle.paint(ctx, path);
     }
 
     getRowVertices() {
