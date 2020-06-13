@@ -44,11 +44,31 @@ export default class Shape extends Drawable {
     }
 
     addFillStyle(style) {
-        this.fillStyles.push(style);
+        if (this.fillStyles.indexOf(style) == -1)
+            this.fillStyles.push(style);
     }
 
     addStrokeStyle(style) {
-        this.strokeStyles.push(style);
+        if (this.strokeStyles.indexOf(style) == -1)
+            this.strokeStyles.push(style);
+    }
+
+    removeFillStyle(style) {
+        this.removeFillStyleAt(this.fillStyles.indexOf(style));
+    }
+
+    removeFillStyleAt(index) {
+        if (index < 0 || index > this.fillStyles.length - 1) return;
+        this.fillStyles.splice(index, 1);
+    }
+
+    removeStrokeStyle(style) {
+        this.removeStrokeStyleAt(this.strokeStyles.indexOf(style));
+    }
+
+    removeStrokeStyleAt(index) {
+        if (index < 0 || index > this.strokeStyles.length - 1) return;
+        this.strokeStyles.splice(index, 1);
     }
 
     getShapeLength() {
