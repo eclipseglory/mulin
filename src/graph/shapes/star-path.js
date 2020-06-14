@@ -17,6 +17,28 @@ export default class StarPath extends Path {
 
     get isClose() { return true; }
 
+    get width() {
+        return super.width;
+    }
+    set width(w) {
+        if (this.width != w) {
+            super.width = w;
+            this._outlinecreated = false;
+            this._inlinecreated = false;
+        }
+    }
+
+    get height() {
+        return super.height;
+    }
+    set height(w) {
+        if (this.height != w) {
+            super.height = w;
+            this._outlinecreated = false;
+            this._inlinecreated = false;
+        }
+    }
+
     get innerRadius() { return this._innerRadius; }
     set innerRadius(r) {
         if (this._innerRadius != r) {

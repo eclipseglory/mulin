@@ -1,9 +1,7 @@
 import Path from "./path.js";
 const HALF_PI = Math.PI / 2;
 export default class RectanglePath extends Path {
-    constructor(props = { anchorX: 0.5, anchorY: 0.5 }) {
-        if (props.anchorX == null) props.anchorX = 0.5;
-        if (props.anchorY == null) props.anchorY = 0.5;
+    constructor(props = {}) {
         super(props);
         this._dirty = true;
         this._radius = props.radius;

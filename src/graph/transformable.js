@@ -253,11 +253,15 @@ export default class Transformable {
             if (index > this.children.length - 1) {
                 this.children[index] = child;
             } else {
-                this.children.push(child);
-                for (let i = this.children.length - 1; i > index; i--) {
-                    let temp = this.children[i];
-                    this.children[i] = this.children[i - 1];
-                    this.children[i - 1] = temp;
+                if (this.children[index] == null) {
+                    this.children[index] = child;
+                } else {
+                    this.children.push(child);
+                    for (let i = this.children.length - 1; i > index; i--) {
+                        let temp = this.children[i];
+                        this.children[i] = this.children[i - 1];
+                        this.children[i - 1] = temp;
+                    }
                 }
             }
         }

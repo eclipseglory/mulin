@@ -19,7 +19,7 @@ export default class EllipsePath extends Path {
      * @param {*} h 
      */
     createPath(ctx, w, h) {
-        ctx.moveTo(0, -w / 2);
+        ctx.moveTo(0, -h / 2);
         if (w == h)
             ctx.arc(0, 0, w / 2, START, END);
         else {
