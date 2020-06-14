@@ -1,12 +1,11 @@
-import Drawable from "../drawable.js";
-import utils from "../utils.js";
 import FillStyle from "../shapes/paint-style/fill-style.js";
 import Shape from "../shapes/shape.js";
 import Path from "../shapes/path.js";
 import Point from "../shapes/point.js";
+import Color from "../color.js";
 
 export default class TransformArrow extends Shape {
-    constructor(props = { arrowLength: 70, arrowSize: 15, arrowHeight: 2, color: [79, 152, 202] }) {
+    constructor(props = { arrowLength: 70, arrowSize: 15, arrowHeight: 2, color: new Color([79, 152, 202]) }) {
         super(props);
         this.arrowLength = props.arrowLength;
         this.arrowHeight = props.arrowHeight;

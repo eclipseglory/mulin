@@ -15,14 +15,13 @@ import FillStyle from "./shapes/paint-style/fill-style.js";
 import StarPath from "./shapes/star-path.js";
 import PolygonPath from "./shapes/polygon-path.js";
 import TrianglePath from "./shapes/triangle-path.js";
-import Rectangle from "./shapes/rectangle.js";
+import Color from "./color.js";
 
 export default class FlareJSONReader {
     constructor() { }
 
     static readJSONObject(obj) {
         let containers = [];
-
         obj.artboards.forEach(artboard => {
             if (artboard.type == 'artboard') {
                 let tempstack = new Array(artboard.nodes.length);
@@ -333,7 +332,7 @@ export default class FlareJSONReader {
                     start: node.start,
                     end: node.end,
                     offset: node.offset,
-                    color: utils.converColorArray(node.color),
+                    color: new Color(utils.converColorArray(node.color)),
                     name: node.name,
                     id: i
                 });
@@ -345,7 +344,7 @@ export default class FlareJSONReader {
                 let shape = tempstack[node.parent];
                 let fillStyle = new FillStyle({
                     opacity: node.opacity,
-                    color: utils.converColorArray(node.color),
+                    color: new Color(utils.converColorArray(node.color)),
                     name: node.name,
                     id: i,
                     fillRule: node.fillRule,

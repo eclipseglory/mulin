@@ -1,30 +1,31 @@
 import Shape from "./shape.js";
 import FillStyle from "./paint-style/fill-style.js";
 import StrokeStyle from "./paint-style/stroke-style.js";
+import Color from "../color.js";
 
 export default class SinglePathShape extends Shape {
     constructor(props = {}) {
         super(props);
-        this._fillStyle = new FillStyle({ color: [0, 0, 0] });
-        this._strokeStyle = new StrokeStyle({ color: [0, 0, 0], width: 0 });
+        this._fillStyle = new FillStyle({ color: new Color() });
+        this._strokeStyle = new StrokeStyle({ color: new Color(), width: 0 });
         this.fillStyles.push(this._fillStyle);
         this.strokeStyles.push(this._strokeStyle);
     }
 
     get color() {
-        return this._fillStyle.color.color;
+        return this._fillStyle.color;
     }
 
     set color(c) {
-        this._fillStyle.color.color = c;
+        this._fillStyle.color = c;
     }
 
     set borderColor(c) {
-        this._strokeStyle.color.color = c;
+        this._strokeStyle.color = c;
     }
 
     get borderColor() {
-        return this._strokeStyle.color.color;
+        return this._strokeStyle.color;
     }
 
     get borderWidth() {

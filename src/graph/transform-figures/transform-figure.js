@@ -5,6 +5,7 @@ import TransformArrow from "./transfrom-arrow.js";
 import Drawable from "../drawable.js";
 import Circle from "../shapes/circle.js";
 import StrokeStyle from "../shapes/paint-style/stroke-style.js";
+import Color from "../color.js";
 
 const START_RADIAN = -90 * utils.PI_DIV_180
 export default class TransformFigure extends Drawable {
@@ -14,12 +15,12 @@ export default class TransformFigure extends Drawable {
         this._circleSVGMatrix = new Matrix3()
             .rotate(START_RADIAN).toSVGMatrix();
         this.fillStyle = new FillStyle({
-            color: [239, 255, 251, 0.8]
+            color: new Color([239, 255, 251, 0.8])
         });
         let ring = new Circle();
         ring.radius = this.width / 2;
         ring.addStrokeStyle(new StrokeStyle({
-            color: [80, 216, 144],
+            color: new Color([80, 216, 144]),
             width: 2
         }));
         this.addChild(ring);
@@ -27,7 +28,7 @@ export default class TransformFigure extends Drawable {
         this.rotateFigure = new Circle({
             radius: 7
         });
-        this.rotateFigure.addFillStyle(new FillStyle({ color: [39, 39, 39] }));
+        this.rotateFigure.addFillStyle(new FillStyle({ color: new Color([39, 39, 39]) }));
         this.rotateFigure.x = Math.cos(-Math.PI / 2) * (this.width / 2);
         this.rotateFigure.y = Math.sin(- Math.PI / 2) * (this.width / 2);
         this.addChild(this.rotateFigure);

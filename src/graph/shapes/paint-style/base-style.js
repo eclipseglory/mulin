@@ -4,9 +4,7 @@ export default class BaseStyle {
     constructor(props = {}) {
         this.name = props.name;
         this.id = props.id;
-        this._color;
-        if (props.color != null)
-            this._color = new Color(props.color);
+        this._color = props.color;
         this.gradientColor = props.gradientColor;
         this.opacity = props.opacity;
         if (this.opacity == null) {
