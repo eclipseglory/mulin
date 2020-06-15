@@ -19,6 +19,8 @@ export default class Shape extends Drawable {
 
     //// 属性 ////
 
+    get paths() { return this._paths; }
+
     /// 方法 ////
 
     getPath(index) {
