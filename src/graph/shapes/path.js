@@ -67,7 +67,21 @@ export default class Path extends Transformable {
         }
     }
 
+    get points() { return this._points; }
+
     //// 方法 ///////
+
+    getPointsNumber() {
+        return this._points.length;
+    }
+
+    getPoint(index) {
+        return this._points[index];
+    }
+
+    getLastPoint() {
+        return this.getPoint(this._points.length - 1);
+    }
 
     addPoint(p) {
         if (p._parent == this) return;
@@ -157,6 +171,7 @@ export default class Path extends Transformable {
             ctx.lineTo(nextPoint.x, nextPoint.y);
             return;
         }
+
         if (pout == null && nin == null) {
             ctx.lineTo(nextPoint.x, nextPoint.y);
         } else {

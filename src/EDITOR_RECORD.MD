@@ -22,3 +22,11 @@
 - 增加了几何图形创建工具（rect , ellipse ,star,triangle,polygon）
 - 再次调整选中设置：让Group中的选中子图形直接独立编辑
 - 增加图形调整：增加的图形会增加到鼠标点击的最上层的图形中，如果该图形不是GroupNode或者是RootNode会出bug，还没有修复
+# 6月14日
+- 增加了编辑器的键盘按键事件响应以及一些对应的快捷方式
+- 增加了删除功能
+- 修改outline的显示，对选中模型更改：如果是单选直接返回figure模型
+- outline对应的模型会在传递时附加一组outline的section折叠属性
+# 6月15日 - 6月23日
+- 调整了select，以及增加图形对应parent
+- 增加了钢笔工具

@@ -12,7 +12,6 @@ export default class Figure extends Drawable {
         this._vertices = null;
     }
 
-
     /**
      * 设置节点的的中心位置位于某个节点的中心 
      * 如果相对Figure参数为空，将会找到Figure的父节点

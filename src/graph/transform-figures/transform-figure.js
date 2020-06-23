@@ -17,18 +17,18 @@ export default class TransformFigure extends Drawable {
         this.fillStyle = new FillStyle({
             color: new Color([239, 255, 251, 0.8])
         });
-        let ring = new Circle();
+        this.ring = new Circle();
+        let ring = this.ring;
         ring.radius = this.width / 2;
-        ring.addStrokeStyle(new StrokeStyle({
-            color: new Color([80, 216, 144]),
-            width: 2
-        }));
+        ring.borderColor = new Color([80, 216, 144]);
+        ring.borderWidth = 2;
+        ring.color = null;
         this.addChild(ring);
 
         this.rotateFigure = new Circle({
             radius: 7
         });
-        this.rotateFigure.addFillStyle(new FillStyle({ color: new Color([39, 39, 39]) }));
+        this.rotateFigure.color = new Color([39, 39, 39]);
         this.rotateFigure.x = Math.cos(-Math.PI / 2) * (this.width / 2);
         this.rotateFigure.y = Math.sin(- Math.PI / 2) * (this.width / 2);
         this.addChild(this.rotateFigure);
@@ -37,6 +37,12 @@ export default class TransformFigure extends Drawable {
         this.yAxis = new TransformArrow();
         this.yAxis.rotation = Math.PI / 2;
         this.addChild(this.yAxis);
+    }
+
+    getDrawable(ctx, x, y, matrix) {
+        let figure = super.getDrawable(ctx, x, y, matrix);
+        if (figure == this || figure == this.ring) return null;
+        return figure;
     }
 
     get rotation() { return super.rotation; }

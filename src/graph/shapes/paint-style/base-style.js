@@ -27,7 +27,9 @@ export default class BaseStyle {
                 return;
             }
             this._color.color = array;
+            return;
         }
+        this._color = array;
     }
 
     canDraw() {

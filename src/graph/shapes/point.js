@@ -13,6 +13,10 @@ export default class Point {
         this._parent;
     }
 
+    get parent(){
+        return this._parent;
+    }
+
     get radius() { return this._radius; }
     set radius(r) {
         if (this._radius != r) {

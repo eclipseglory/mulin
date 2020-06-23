@@ -59,6 +59,7 @@ export default class Group extends Drawable {
 
     containsPoint(ctx, x, y, matrix) {
         if (x == null || y == null) return false;
+        if (this._pointOnMe(ctx, x, y, matrix)) return true;
         for (let i = this._children.length - 1; i >= 0; i--) {
             let c = this._children[i];
             if (c.containsPoint(ctx, x, y, matrix)) {
@@ -68,8 +69,7 @@ export default class Group extends Drawable {
         return false;
     }
 
-    getDrawable(ctx, x, y, matrix) {
-        if (x == null || y == null) return null;
+    _pointOnMe(ctx, x, y, matrix) {
         if (ctx.drawGroupNode) {
             let x1 = x; let y1 = y;
             let worldMatrix = this.getWorldTransformMatrix();
@@ -83,15 +83,20 @@ export default class Group extends Drawable {
             let point = invertMatrix.multiplyWithVertexDatas(x1, y1);
             let r = this.nodeSize / 2;
             if (point[0] >= -r && point[1] >= -r && point[0] <= r && point[1] <= r)
-                return this;
+                return true;
         }
+        return false;
+    }
+
+    getDrawable(ctx, x, y, matrix) {
+        if (x == null || y == null) return;
+        if (this._pointOnMe(ctx, x, y, matrix)) return this;
         for (let i = this._children.length - 1; i >= 0; i--) {
             let c = this._children[i];
-            if (c.containsPoint(ctx, x, y, matrix)) {
-                return c.getDrawable(ctx, x, y, matrix);
-            }
+            let f = c.getDrawable(ctx, x, y, matrix);
+            if (f) return f;
         }
-        return null;
+        return;
     }
 
     getNodeShapePath(ctx) {

@@ -1,7 +1,7 @@
-import Shape from "./shape.js";
 import EllipsePath from "./ellipse-path.js";
+import SinglePathShape from "./single-path-shape.js";
 
-export default class Circle extends Shape {
+export default class Circle extends SinglePathShape {
     constructor(params = {}) {
         super(params);
         this._circlePath = new EllipsePath(); //加一个圆形path进去
