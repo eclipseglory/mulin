@@ -13,7 +13,7 @@ export default class Point {
         this._parent;
     }
 
-    get parent(){
+    get parent() {
         return this._parent;
     }
 
@@ -67,6 +67,32 @@ export default class Point {
 
     get in() { return this._in; }
     get out() { return this._out; }
+
+    get inX() { if (this.in) return this.in[0] }
+    set inX(x) {
+        this.setInX(x);
+    }
+    get inY() { if (this.in) return this.in[1] }
+    set inY(y) {
+        this.setInY(y);
+    }
+
+    get outX() { if (this.out) return this.out[0] }
+    set outX(x) {
+        this.setOutX(x);
+    }
+    get outY() { if (this.out) return this.out[1] }
+    set outY(y) {
+        this.setOutY(y);
+    }
+
+    initInControl() {
+        this._in = [0, 0];
+    }
+
+    initOutControl() {
+        this._out = [0, 0];
+    }
 
     setInX(v) {
         if (this.in == null) {

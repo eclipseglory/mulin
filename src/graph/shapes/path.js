@@ -91,6 +91,30 @@ export default class Path extends Transformable {
         this.fireDirty();
     }
 
+    insertPoint(point, index) {
+        let child = point;
+        if (index == this.points.length) {
+            this.points.push(child);
+        } else {
+            if (index > this.points.length - 1) {
+                this.points[index] = child;
+            } else {
+                if (this.points[index] == null) {
+                    this.points[index] = child;
+                } else {
+                    this.points.push(child);
+                    for (let i = this.points.length - 1; i > index; i--) {
+                        let temp = this.points[i];
+                        this.points[i] = this.points[i - 1];
+                        this.points[i - 1] = temp;
+                    }
+                }
+            }
+        }
+        child._parent = this;
+        this.fireDirty();
+    }
+
     removePointAt(index) {
         if (index < 0 || index > this._points.length - 1) return;
         let p = this._points[index];

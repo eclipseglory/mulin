@@ -5,48 +5,27 @@ import SinglePathShape from "./single-path-shape.js";
 export default class Rectangle extends SinglePathShape {
     constructor(params = {}) {
         super(params);
-        let radius = params['radius'] == null ? 0 : params['radius'];
-        this._rectanglePath = new RectanglePath({
-            radius: radius,
-            width: this.width,
-            height: this.height
-        })
-        this.addPath(this._rectanglePath);
+    }
+
+    createSinglePath(props) {
+        return new RectanglePath(props);
     }
 
     set startX(x) {
-        this._rectanglePath.startX = x;
+        this._singlePath.startX = x;
     }
 
     set startY(y) {
-        this._rectanglePath.startY = y;
-    }
-
-    get width() {
-        return super.width;
-    }
-
-    set width(w) {
-        super.width = w;
-        this._rectanglePath.width = w;
-    }
-
-    get height() {
-        return super.height;
-    }
-
-    set height(w) {
-        super.height = w;
-        this._rectanglePath.height = w;
+        this._singlePath.startY = y;
     }
 
     get radius() {
-        return this._rectanglePath.radius;
+        return this._singlePath.radius;
     }
 
     set radius(v) {
-        if (this._rectanglePath.radius != v) {
-            this._rectanglePath.radius = v;
+        if (this._singlePath.radius != v) {
+            this._singlePath.radius = v;
         }
     }
 

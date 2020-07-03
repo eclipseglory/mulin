@@ -10,6 +10,37 @@ export default class SinglePathShape extends Shape {
         this._strokeStyle = new StrokeStyle({ color: new Color(), width: 0 });
         this.fillStyles.push(this._fillStyle);
         this.strokeStyles.push(this._strokeStyle);
+        this._singlePath = this.createSinglePath(props);
+        if (this._singlePath) {
+            this.addPath(this._singlePath);
+        }
+    }
+
+    get isClose() {
+        return true;
+    }
+
+    createSinglePath() {
+
+    }
+    get width() {
+        if (this._singlePath)
+            return this._singlePath.width;
+    }
+
+    set width(w) {
+        if (this._singlePath)
+            this._singlePath.width = w;
+    }
+
+    get height() {
+        if (this._singlePath)
+            return this._singlePath.height;
+    }
+
+    set height(w) {
+        if (this._singlePath)
+            this._singlePath.height = w;
     }
 
     get color() {
