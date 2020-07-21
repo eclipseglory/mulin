@@ -18,6 +18,14 @@ export default class Color {
         return v;
     }
 
+    clone() {
+        let a = this.a;
+        if (a != null && a != 1) {
+            return new Color([this.r, this.g, this.b, this.a]);
+        }
+        return new Color([this.r, this.g, this.b]);
+    }
+
     set color(array) {
         if (array instanceof Array) {
             this.setColor(array, 0, array.length == 4);

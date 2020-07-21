@@ -15,6 +15,10 @@ export default class GradientColor {
 
     }
 
+    clone() {
+
+    }
+
     getGradient(ctx) {
         if (this._gradient == null) {
             this._gradient = this._createGradient(ctx);

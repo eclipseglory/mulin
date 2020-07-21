@@ -100,10 +100,10 @@ export default class DelegateFigure extends Drawable {
     }
 
     getParentTransformMatrix() {
-        let parent = this.parent;
-        if (parent && parent instanceof DelegateFigure) {
-            let m = parent.get
-        }
+        // let parent = this.parent;
+        // if (parent && parent instanceof DelegateFigure) {
+        //     let m = parent.get
+        // }
     }
 
     applyCurrentTransform(ctx) {

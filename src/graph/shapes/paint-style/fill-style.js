@@ -50,4 +50,19 @@ export default class FillStyle extends BaseStyle {
             ctx.fill();
         }
     }
+
+    clone() {
+        let fill = new FillStyle({
+            name: this.name,
+            opacity: this.opacity,
+            fillRule: this.fillRule,
+        });
+        if (this._color) {
+            fill._color = this._color.clone();
+        }
+        if (this.gradientColor) {
+            fill.gradientColor = this.gradientColor.clone();
+        }
+        return fill;
+    }
 }

@@ -32,6 +32,10 @@ export default class BaseStyle {
         this._color = array;
     }
 
+    clone(){
+        
+    }
+
     canDraw() {
         return (this.color != null || this.gradientColor != null) && this.opacity != 0;
     }
