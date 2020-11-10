@@ -1,4 +1,6 @@
 import BaseStyle from "./base-style.js";
+import Color from "../../color.js";
+import GradientColor from "../../gradient-color.js";
 
 
 const JOIN = ['bevel', 'round', 'miter'];
@@ -37,11 +39,13 @@ export default class StrokeStyle extends BaseStyle {
 
     _applyStyle(ctx, length) {
         super._applyStyle(ctx);
-        if (this.color != null) {
-            ctx.strokeStyle = this.strokeColor.color;
-        } else {
-            if (this.gradientColor != null) {
-                ctx.strokeStyle = this.gradientColor.getGradient(ctx);
+        if (this.strokeColor != null) {
+            let color = this.strokeColor;
+            if (color instanceof Color) {
+                ctx.strokeStyle = color.color;
+            }
+            if (color instanceof GradientColor) {
+                ctx.strokeStyle = color.getGradient(ctx);
             }
         }
         ctx.lineWidth = this.width;

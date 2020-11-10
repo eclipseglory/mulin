@@ -1,4 +1,5 @@
 import Color from "../../color.js";
+import GradientColor from "../../gradient-color.js";
 
 export default class BaseStyle {
     constructor(props = {}) {
@@ -13,10 +14,15 @@ export default class BaseStyle {
     }
 
     get color() {
-        return this._color;
+        if (this._color) return this._color;
+        return this.gradientColor;
     }
 
     set color(array) {
+        if (array instanceof GradientColor) {
+            this.gradientColor = array;
+            return;
+        }
         if (array instanceof Color) {
             this._color = array;
             return;
@@ -32,8 +38,8 @@ export default class BaseStyle {
         this._color = array;
     }
 
-    clone(){
-        
+    clone() {
+
     }
 
     canDraw() {

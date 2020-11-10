@@ -1,4 +1,7 @@
 import BaseStyle from "./base-style.js";
+import Color from "../../color.js";
+import GradientColor from "../../gradient-color.js";
+import Matrix3 from "../../math/matrix3.js";
 
 export default class FillStyle extends BaseStyle {
     constructor(props = {}) {
@@ -35,10 +38,12 @@ export default class FillStyle extends BaseStyle {
     _applyStyle(ctx) {
         super._applyStyle(ctx);
         if (this.fillColor != null) {
-            ctx.fillStyle = this.fillColor.color;
-        } else {
-            if (this.gradientColor != null) {
-                ctx.fillStyle = this.gradientColor.getGradient(ctx);
+            let color = this.fillColor;
+            if (color instanceof Color) {
+                ctx.fillStyle = color.color;
+            }
+            if (color instanceof GradientColor) {
+                ctx.fillStyle = color.getGradient(ctx);
             }
         }
     }

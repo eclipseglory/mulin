@@ -10,6 +10,9 @@ export default class GradientColor {
 
     get colorStopValuesOffset() { return 4; }
     get coordOffset() { return 0; }
+    get colorStops() {
+        return this._colorStops;
+    }
 
     _createGradient(ctx) {
 
@@ -17,6 +20,11 @@ export default class GradientColor {
 
     clone() {
 
+    }
+
+    cleanColorStops() {
+        this._colorStops = null;
+        this._gradient = null;
     }
 
     getGradient(ctx) {
