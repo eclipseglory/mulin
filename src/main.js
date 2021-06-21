@@ -4,3 +4,6 @@ import router from './router'
 import store from './store'
 
 createApp(App).use(store).use(router).mount('#app')
+
+
+// TODO #12 实现像素转矢量功能

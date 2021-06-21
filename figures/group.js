@@ -1,6 +1,6 @@
 import CanvasKitUtils from "./canvaskit-utils.js";
 import Figure from "./figure.js";
-
+// TODO #10 : bug:Group中的图形修改后Group的bounds不会修改
 export default class Group extends Figure {
     constructor(props) {
         super(props);

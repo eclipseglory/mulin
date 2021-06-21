@@ -504,8 +504,8 @@ export default {
       if (type == "minus") {
         action = ActionFactory.newDeletePointAction(path, index);
       }
-      if(type =='change'){
-        action = ActionFactory.newChangePropertyAction(point,'out',null);
+      if (type == "change") {
+        action = ActionFactory.newChangePropertyAction(point, "out", null);
       }
       if (action) this.excuteAction(action);
       if (type == "close") {

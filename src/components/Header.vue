@@ -62,6 +62,55 @@
             </ul>
           </li>
         </ul>
+
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              id="editMenuLink"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <small><label>Edit</label></small>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="editMenuLink">
+              <edit-menu />
+            </ul>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              id="figureMenuLink"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <small><label>Figures</label></small>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="figureMenuLink">
+              <figure-menu />
+            </ul>
+          </li>
+        </ul>
+
+        <!-- <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              id="selectMenuLink"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <small><label>Select</label></small>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="selectMenuLink"></ul>
+          </li>
+        </ul> -->
       </div>
       <new-doc-dialog :show="showDocDialog" @dialog:hidden="docDialogHidden" />
       <load-dialog :show="showLoadDialog" @dialog:hidden="loadDialogHidden" />
@@ -74,11 +123,13 @@ import NewDocDialog from "./NewDocDialog.vue";
 import docstoremapper from "../store/doc-store-mapper";
 import LoadDialog from "./LoadDialog.vue";
 import { exportToSVG } from "figures/exporter";
+import EditMenu from "./menus/edit-menu.vue";
+import FigureMenu from "./menus/figure-menu.vue";
 
 export default {
   mixins: [docstoremapper],
   name: "Header",
-  components: { NewDocDialog, LoadDialog },
+  components: { NewDocDialog, LoadDialog, EditMenu, FigureMenu },
   emits: ["document:new", "svg:create", "document:update"],
 
   data() {
@@ -158,4 +209,23 @@ export default {
   padding: 2px 20px 2px 20px;
   box-sizing: border-box;
 }
+
+/* ============ desktop view ============ */
+@media all and (min-width: 992px) {
+  .navbar-nav li {
+    position: relative;
+  }
+  .navbar-nav li .submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: -7px;
+  }
+  .navbar-nav li:hover > .submenu {
+    display: block;
+  }
+}
+/* ============ desktop view .end// ============ */
+
+
 </style>

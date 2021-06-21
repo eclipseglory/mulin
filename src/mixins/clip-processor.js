@@ -74,7 +74,7 @@ export default {
 
             this.excuteAction(actions);
         },
-
+        // TODO #11 取消剪切蒙版后，剪切主体在图层下，应该在图层顶部
         unClip() {
             let masks = [];
             this.selections.forEach((selection) => {
