@@ -100,6 +100,7 @@ export default class PenTool extends Tool {
     toolActived(x, y) {
         super.toolActived(x, y);
         this.completeType = null;
+        this.minusIndex = -1;
         let clickFigure = this.frontRoot.findFigure(x, y);
         clickFigure = (clickFigure == this.frontRoot || clickFigure == this.shadowPath) ? null : clickFigure;
         if (clickFigure) {
@@ -108,11 +109,18 @@ export default class PenTool extends Tool {
             let index = this.shadowPath.indexOfVertex(clickFigure);
             console.log(index, this.shadowPath.getPathModel().pointsCount);
             // TODO: 如果是最后一个节点,修改顶点类型
-            if (index != -1 && index != this.shadowPath.getPathModel().length - 1) {
-                this.completeType = 'minus';
-                this.minusIndex = index;
+            if (index != -1) {
                 if (index == 0) {
                     this.completeType = 'close';
+                } else if (index < this.shadowPath.getPathModel().pointsCount - 1) {
+                    this.completeType = 'minus';
+                    this.minusIndex = index;
+                } else if (index == this.shadowPath.getPathModel().pointsCount - 1) {
+                    let point = this.shadowPath.getPathModel().getPoint(index);
+                    if (point.out != null) {
+                        this.completeType = 'change';
+                        this.minusIndex = index;
+                    }
                 }
                 return;
             }
@@ -162,6 +170,11 @@ export default class PenTool extends Tool {
         if (this.completeType == 'minus') {
             let temp = this.getSelectionById(this.currentPath.id);
             event = { type: this.completeType, index: this.minusIndex, path: temp };
+        }
+        if (this.completeType == 'change') {
+            let temp = this.getSelectionById(this.currentPath.id);
+            let point = temp.getPathModel().getPoint(this.minusIndex);
+            event = { type: this.completeType, point };
         }
         if (this.shadowPath) this.shadowPath.applyRestingVisible();
         this.frontRoot.refresh();

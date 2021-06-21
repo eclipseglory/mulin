@@ -6,6 +6,7 @@ project.md
 /public
 /tests
 /download
+/old
 
 # local env files
 .env.local
