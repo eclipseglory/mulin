@@ -2,6 +2,7 @@ import CanvasKitUtils from "../canvaskit-utils.js";
 import utils from "../canvaskit-utils.js"
 import Figure from "../figure.js";
 
+// TODO #13 导出剪切图形对应的SVG
 export default class Shape extends Figure {
     constructor(props) {
         super(props);

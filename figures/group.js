@@ -147,6 +147,14 @@ export default class Group extends Figure {
                     let cp = child.getTarget().getPath().copy();
                     cp.transform(child.matrix.data);
                     this.getTarget()._path.addPath(cp);
+                } else {
+                    // TODO #14 没有Path的图形在Group下无法显示feedback
+                    let bounds = child.bounds;
+                    let m = child.matrix.clone();
+                    let p1 = m.multiplyWithVertexDatas(bounds.left, bounds.top);
+                    let p2 = m.multiplyWithVertexDatas(bounds.right, bounds.bottom);
+                    let rect = CanvasKitUtils.newXYWHRect(p1[0], p1[1], p2[0] - p1[0], p2[1] - p1[1]);
+                    this.getTarget()._path.addRect(rect);
                 }
             })
         }
@@ -204,7 +212,7 @@ export default class Group extends Figure {
         return new Group();
     }
 
-    getJsonObjectName(){return 'group'}
+    getJsonObjectName() { return 'group' }
 
     async toJsonObject() {
         let obj = await super.toJsonObject();

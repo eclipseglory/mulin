@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      v-if="!hasFillProperty || isLine"
+      v-if="!hasFillProperty || isLine || isImage"
       style="text-algin: left; color: grey"
     >
       <small>Invalidate</small>
@@ -51,7 +51,7 @@ import {
   selectiontypeprocessor,
 } from "../../mixins";
 import ColorConfigProperty from "./ColorConfigProperty.vue";
-import { Point, CanvasKitUtils } from "figures";
+import { Point, CanvasKitUtils,ImageFigure } from "figures";
 import Property from "./Property.vue";
 import { ActionFactory, CompositeAction } from "../../actions";
 
@@ -132,7 +132,7 @@ export default {
       if (!this.isEmptySelections) {
         for (let index = 0; index < this.selections.length; index++) {
           const selection = this.selections[index];
-          if (selection instanceof Point) return false;
+          if (selection instanceof Point || selection instanceof ImageFigure) return false;
         }
         return true;
       }

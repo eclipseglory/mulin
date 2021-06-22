@@ -14,7 +14,9 @@ import DocumentRoot from './document-root';
 import * as parser from './parser';
 import * as exporter from './exporter';
 import * as gradient from './gradient';
+import ImageFigure from './image-figure';
 export {
+    ImageFigure,
     DocumentRoot, parser, exporter, gradient,
     shape, math, quadtree, Figure, Group, Text,
     CanvasKitUtils, RootFigure, Point, Path, Utils, EventEmitter

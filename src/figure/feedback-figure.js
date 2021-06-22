@@ -16,7 +16,9 @@ export default class FeedbackFigure extends Shape {
             this.getTarget()._path = target.getTarget().getPath().copy();
         } else {
             this.getTarget()._path = CanvasKitUtils.newPath();
-            this.getTarget()._path.addRect(CanvasKitUtils.newXYWHRect(0, 0, target.width, target.height));
+            let bounds = target.bounds;
+            this.getTarget()._path.addRect(CanvasKitUtils.newXYWHRect(bounds.left, bounds.top,
+                bounds.right - bounds.left, bounds.bottom - bounds.top));
         }
 
     }

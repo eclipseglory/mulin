@@ -1,4 +1,4 @@
-import { Group, Point, Text } from "figures";
+import { Group, ImageFigure, Point, Text } from "figures";
 import { Line, PathShape, Polygon, Rect, Shape, Star } from "figures/shape";
 
 export default {
@@ -22,7 +22,8 @@ export default {
             if (this.hasSelection) {
                 for (let index = 0; index < this.selections.length; index++) {
                     const selection = this.selections[index];
-                    if (selection instanceof Point) return false;
+                    if (selection instanceof Point || selection instanceof ImageFigure) return false;
+
                 }
                 return true
             }
@@ -33,6 +34,15 @@ export default {
             if (!this.isSingleSelection) return false;
             let s = this.currentSelection;
             if (s instanceof Line) {
+                return true;
+            }
+            return false;
+        },
+
+        isImage() {
+            if (!this.isSingleSelection) return false;
+            let s = this.currentSelection;
+            if (s instanceof ImageFigure) {
                 return true;
             }
             return false;

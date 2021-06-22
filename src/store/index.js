@@ -11,12 +11,20 @@ const state = {
     family: 'Arial',
     size: 10
   },
+  images: [],
   fonts: []
 }
 
 const mutations = {
   addFontFamily(state, font) {
     state.fonts.push(font);
+  },
+  addImage(state, img) {
+    state.images.push(img);
+  },
+  removeImage(img) {
+    let index = state.images.indexOf(img);
+    if (index != -1) state.images.splice(index, 1);
   },
   updateDocument(state, newDoc) {
     state.document = newDoc
@@ -66,6 +74,10 @@ const getters = {
 
   isEmptySelections(state) {
     return state.selections == null || state.selections.length == 0
+  },
+
+  images(state) {
+    return state.images;
   },
 
   fonts(state) {

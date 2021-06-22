@@ -11,7 +11,12 @@
       <div id="canvas-toolbar">
         <action-bar />
       </div>
-      <div id="canvas-container" :style="'cursor:' + cursor">
+      <div
+        id="canvas-container"
+        :style="'cursor:' + cursor"
+        @dragover="resourceDragover"
+        @drop="resourceDrop"
+      >
         <div
           v-show="loading"
           class="painter-canvas loading-container darkbg"
@@ -53,7 +58,7 @@
 import ToolsBar from "./ToolsBar.vue";
 
 import TransformFeedback from "../../figure/transform-feedback.js";
-import { DocumentRoot } from "figures";
+import { DocumentRoot, ImageFigure } from "figures";
 
 import ActionFactory from "../../actions/action-factory.js";
 import CompositeAction from "../../actions/compsite-action.js";
@@ -86,6 +91,7 @@ import ActionBar from "./ActionBar.vue";
 
 import { keyboardhandler, rootfigurecreator } from "../../mixins";
 import docstoremapper from "../../store/doc-store-mapper";
+import { toRaw } from "@vue/reactivity";
 
 const mixins = [keyboardhandler, rootfigurecreator, docstoremapper];
 
@@ -121,6 +127,45 @@ export default {
     });
   },
   methods: {
+    resourceDragover(event) {
+      if (this.mainRoot) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "link";
+      }
+    },
+    resourceDrop(event) {
+      if (this.mainRoot) {
+        let index = event.dataTransfer.getData("imageIndex");
+        let imageResource = this.images[index];
+        if (!imageResource) return;
+        let image = toRaw(imageResource.image);
+        let m = this.mainRoot.worldMatrix.clone().invert();
+        let w, h;
+        w = imageResource.width;
+        if (w >= this.mainRoot.width) {
+          w = this.mainRoot.width;
+          h = Math.floor((w * imageResource.height) / imageResource.width);
+        }
+        h = imageResource.height;
+        if (h >= this.mainRoot.height) {
+          h = this.mainRoot.height;
+          w = Math.floor((h * imageResource.width) / imageResource.height);
+        }
+        let p = m.multiplyWithVertexDatas(event.offsetX, event.offsetY);
+        let img = new ImageFigure({
+          x: p[0],
+          y: p[1],
+          width: w,
+          height: h,
+          srcWidth: imageResource.width,
+          srcHeight: imageResource.height,
+          image: image,
+        });
+        let action = ActionFactory.newAddFigureAction(img,this.mainRoot,'Add Image Figure')
+        this.excuteAction(action);
+        this.mainRoot.refresh();
+      }
+    },
     textInputCompleted(event) {
       let ref = this.$refs["canvas-text-input"];
       ref.blur();

@@ -1,7 +1,22 @@
 <template>
   <div id="editor-main">
-    <div id="main-left" class="blackbg">
-      <document />
+    <div id="main-left" class="darkbg main-left-panel">
+      <div style="width: 100%; min-height: 61.8%; max-height: 61.8%">
+        <document />
+      </div>
+      <div
+        style="width: 100%; min-height: 37%; max-height: 37%"
+        class="resource-panel"
+      >
+        <resource-panel />
+        <!-- <div
+          class="gray-splitter"
+          style="height: 5px; background-color: #414141; margin-bottom: 0px;width:100%"
+        ></div>
+        <div style="flex-grow: 1">
+          <resource-panel />
+        </div> -->
+      </div>
     </div>
     <div id="main-center">
       <Canvas
@@ -21,6 +36,7 @@ import ToolsBar from "./workspace/ToolsBar.vue";
 import PropertyBar from "./property/PropertyBar.vue";
 import Canvas from "./workspace/Canvas.vue";
 import Document from "./structure/Document.vue";
+import ResourcePanel from "./structure/ResourcePanel.vue";
 
 export default {
   name: "Main",
@@ -29,6 +45,7 @@ export default {
     PropertyBar,
     Canvas,
     Document,
+    ResourcePanel,
   },
   emits: ["tooltip:update"],
 
@@ -89,6 +106,18 @@ export default {
 
 #main-center {
   flex-grow: 1;
+}
+
+.main-left-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.resource-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .gutter {

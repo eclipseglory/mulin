@@ -202,7 +202,7 @@ import {
   propertychangeeventhandler,
   selectiontypeprocessor,
 } from "../../mixins";
-import { CanvasKitUtils, Point, Text } from "figures";
+import { CanvasKitUtils, Point, ImageFigure } from "figures";
 import Property from "./Property.vue";
 import ColorProperty from "./ColorProperty.vue";
 import ColorConfigProperty from "./ColorConfigProperty.vue";
@@ -307,7 +307,7 @@ export default {
       if (!this.isEmptySelections) {
         for (let index = 0; index < this.selections.length; index++) {
           const selection = this.selections[index];
-          if (selection instanceof Point) return false;
+          if (selection instanceof Point || selection instanceof ImageFigure) return false;
         }
         return true;
       }

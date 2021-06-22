@@ -1,5 +1,5 @@
 <template>
-  <div class="document-root">
+  <div class="document-root blackbg">
     <div class="document-header">
       <small>
         <i class="iconfont icon-document" style="margin-right: 5px"></i
@@ -37,11 +37,11 @@ export default {
 <style>
 .document-root {
   box-sizing: border-box;
-  height: 61.8%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 20px;
+  padding: 20px 20px 5px 20px;
   box-sizing: border-box;
 }
 
@@ -61,8 +61,8 @@ export default {
 }
 
 .document-content::-webkit-scrollbar {
-  width: 12px; /* width of the entire scrollbar */
-  height: 12px;
+  width: 5px; /* width of the entire scrollbar */
+  height: 5px;
 }
 
 .document-content::-webkit-scrollbar-track {

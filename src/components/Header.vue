@@ -42,6 +42,12 @@
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
+                <a class="dropdown-item" @click="openImgImportDialog">
+                  <small><label>Import Image</label></small></a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
                 <a
                   class="dropdown-item"
                   @click="save"
@@ -114,6 +120,10 @@
       </div>
       <new-doc-dialog :show="showDocDialog" @dialog:hidden="docDialogHidden" />
       <load-dialog :show="showLoadDialog" @dialog:hidden="loadDialogHidden" />
+      <image-import-dialog
+        :show="showImageImportDialog"
+        @dialog:hidden="imgImportDialogHidden"
+      />
     </div>
   </nav>
 </template>
@@ -125,17 +135,25 @@ import LoadDialog from "./LoadDialog.vue";
 import { exportToSVG } from "figures/exporter";
 import EditMenu from "./menus/edit-menu.vue";
 import FigureMenu from "./menus/figure-menu.vue";
+import ImageImportDialog from "./ImageImportDialog.vue";
 
 export default {
   mixins: [docstoremapper],
   name: "Header",
-  components: { NewDocDialog, LoadDialog, EditMenu, FigureMenu },
-  emits: ["document:new", "svg:create", "document:update"],
+  components: {
+    NewDocDialog,
+    LoadDialog,
+    EditMenu,
+    FigureMenu,
+    ImageImportDialog,
+  },
+  emits: ["document:new", "svg:create", "document:update", "image:imported"],
 
   data() {
     return {
       showDocDialog: false,
       showLoadDialog: false,
+      showImageImportDialog: false,
     };
   },
 
@@ -163,10 +181,21 @@ export default {
       if (this.showLoadDialog) return;
       this.showLoadDialog = true;
     },
+    openImgImportDialog(e) {
+      if (!this.showImageImportDialog) {
+        this.showImageImportDialog = true;
+      }
+    },
     loadDialogHidden(event) {
       this.showLoadDialog = false;
       if (event.doc) {
         this.$emit("document:update", event.doc);
+      }
+    },
+    imgImportDialogHidden(event) {
+      this.showImageImportDialog = false;
+      if (event.images != null && event.images.length > 0) {
+        this.$emit("image:imported", event.images);
       }
     },
     docDialogHidden(event) {
@@ -226,6 +255,4 @@ export default {
   }
 }
 /* ============ desktop view .end// ============ */
-
-
 </style>

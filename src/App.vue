@@ -26,6 +26,7 @@
         @document:new="newDocument"
         @document:update="updateDoc"
         @svg:create="createSVG"
+        @image:imported="imageImported"
       />
       <Main ref="main" @tooltip:update="tooltipUpdate" />
       <Footer :tooltip="tooltip" />
@@ -91,6 +92,11 @@ export default {
     });
   },
   methods: {
+    imageImported(images) {
+      images.forEach(image =>{
+        this.$store.commit('addImage',image);
+      })
+    },
     tooltipUpdate(event) {
       this.tooltip = event;
     },
