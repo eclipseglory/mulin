@@ -40,6 +40,9 @@ import Footer from "./components/Footer.vue";
 import { CanvasKitUtils, DocumentRoot } from "figures";
 export default {
   name: "App",
+  created() {
+    this.$VERSION = process.env.VUE_APP_VERSION;
+  },
   mounted() {
     let el = this.$el;
     let loader = el.querySelector("#main-loader");
@@ -93,9 +96,9 @@ export default {
   },
   methods: {
     imageImported(images) {
-      images.forEach(image =>{
-        this.$store.commit('addImage',image);
-      })
+      images.forEach((image) => {
+        this.$store.commit("addImage", image);
+      });
     },
     tooltipUpdate(event) {
       this.tooltip = event;

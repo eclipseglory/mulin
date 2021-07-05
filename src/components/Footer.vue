@@ -4,7 +4,7 @@
       <small>{{ tooltip }}</small>
     </div>
     <div>
-      <small>v0.0.1</small>
+      <small v-once>{{ $root.$VERSION }}</small>
     </div>
   </div>
 </template>

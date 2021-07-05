@@ -55,6 +55,10 @@ export default {
               id: "pen",
               icon: "icon-pen",
             },
+            {
+              id: "curve",
+              icon: "icon-pen",
+            },
           ],
         },
 

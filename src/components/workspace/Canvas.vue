@@ -79,6 +79,7 @@ import EllipseTool from "../../tool/shaptools/ellipse-tool.js";
 import StarTool from "../../tool/shaptools/star-tool.js";
 import PolygonTool from "../../tool/shaptools/polygon-tool.js";
 import PenTool from "../../tool/pen-tool.js";
+import CurveLineTool from "../../tool/curve-line-tool.js";
 import VertexSelectTool from "../../tool/vertex-select-tool.js";
 import TranslateRootTool from "../../tool/translate-root-tool.js";
 import LineTool from "../../tool/shaptools/line-tool.js";
@@ -92,6 +93,8 @@ import ActionBar from "./ActionBar.vue";
 import { keyboardhandler, rootfigurecreator } from "../../mixins";
 import docstoremapper from "../../store/doc-store-mapper";
 import { toRaw } from "@vue/reactivity";
+import { PathShape } from "../../../figures/shape";
+import { Point } from "../../../figures";
 
 const mixins = [keyboardhandler, rootfigurecreator, docstoremapper];
 
@@ -161,7 +164,11 @@ export default {
           srcHeight: imageResource.height,
           image: image,
         });
-        let action = ActionFactory.newAddFigureAction(img,this.mainRoot,'Add Image Figure')
+        let action = ActionFactory.newAddFigureAction(
+          img,
+          this.mainRoot,
+          "Add Image Figure"
+        );
         this.excuteAction(action);
         this.mainRoot.refresh();
       }
@@ -272,6 +279,8 @@ export default {
       register(new VTextTool(frontRoot, mainRoot, back));
 
       register(new PenTool(frontRoot, mainRoot, back));
+      register(new CurveLineTool(frontRoot, mainRoot, back));
+
       register(new RectTool(frontRoot, mainRoot, back));
       register(new StarTool(frontRoot, mainRoot, back));
       register(new EllipseTool(frontRoot, mainRoot, back));
@@ -462,7 +471,8 @@ export default {
         id == "polygon" ||
         id == "line" ||
         id == "text" ||
-        id == "v-text"
+        id == "v-text" ||
+        id =='curve'
       );
     },
 
