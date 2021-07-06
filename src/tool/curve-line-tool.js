@@ -47,7 +47,6 @@ export default class CurveLineTool extends Tool {
         this.frontRoot.refresh();
         if (this.sx - x == 0 && this.sy - y == 0) return;
         let points = model.points.map((p) => {
-            // let p1 = m.multiplyWithVertexDatas(p.x + tx, p.y + y);
             return [p.x / this.mainRoot.scalex, p.y / this.mainRoot.scaley]
         });
         let newPoints = douglasPeucker(points);
@@ -55,7 +54,6 @@ export default class CurveLineTool extends Tool {
         model = null;
         points.length = 0;
         points = null;
-        console.log(newPoints);
         let ps;
         if (newPoints.length >= 3) {
             ps = smoothLines(newPoints);

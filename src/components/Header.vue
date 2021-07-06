@@ -118,6 +118,11 @@
           </li>
         </ul> -->
       </div>
+      <form class="form-inline">
+        <a :href="$root.$GITHUB" class="nav-link action-button" target="_blank"
+          ><i class="iconfont icon-GitHub"></i
+        ></a>
+      </form>
       <new-doc-dialog :show="showDocDialog" @dialog:hidden="docDialogHidden" />
       <load-dialog :show="showLoadDialog" @dialog:hidden="loadDialogHidden" />
       <image-import-dialog

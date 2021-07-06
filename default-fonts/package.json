@@ -1,0 +1,14 @@
+{
+  "name": "mulin-default-fonts",
+  "version": "0.0.1",
+  "description": "The default fonts' files for Mulin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fonts"
+  ],
+  "author": "老脸",
+  "license": "MIT"
+}

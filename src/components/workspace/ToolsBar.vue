@@ -57,7 +57,7 @@ export default {
             },
             {
               id: "curve",
-              icon: "icon-pen",
+              icon: "icon-pen-curve",
             },
           ],
         },

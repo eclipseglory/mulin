@@ -1,24 +1,10 @@
-# mulin
+# MULIN
 
-## Project setup
-```
-npm install
-```
+## About
+MULIN is a online vector image/ animation editor. It developed with [Vue](https://vuejs.org) and [Skia Canvaskit](https://skia.org/docs/user/modules/canvaskit).
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+![Preview](https://eclipseglory.github.io/mulin/mulin_preview.png).
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Online Editor
+https://eclipseglory.github.io/mulin
 
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

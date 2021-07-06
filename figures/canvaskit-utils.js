@@ -4,17 +4,17 @@ const _canvas_kit = Symbol('Canvaskit instance');
 
 const DEFAULT_FONTS = [
     {
-        path: 'assets/fonts/Roboto-Regular.ttf',
+        path: 'Roboto-Regular.ttf',
         descriptors: { family: 'Roboto' }
     },
 
     {
-        path: 'assets/fonts/msyh.ttf',
+        path: 'msyh.ttf',
         descriptors: { family: '微软雅黑' }
     },
 
     {
-        path: 'assets/fonts/Arial.ttf',
+        path: 'Arial.ttf',
         descriptors: { family: 'Arial' }
     },
 ];

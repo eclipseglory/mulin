@@ -42,6 +42,9 @@ export default {
   name: "App",
   created() {
     this.$VERSION = process.env.VUE_APP_VERSION;
+    this.$CANVASKIT_PATH = process.env.VUE_APP_CANVASKIT_PATH;
+    this.$DEFAULTFONTS_PATH = process.env.VUE_APP_FONTS_PATH;
+    this.$GITHUB = process.env.VUE_APP_GITHUB;
   },
   mounted() {
     let el = this.$el;
@@ -63,7 +66,6 @@ export default {
         if (event.target.id == "progress-bar") {
           if (this.currentProgress >= this.totalProgress) {
             this.initCompleted = true;
-            console.log(CanvasKitUtils.fontCache);
           }
         }
       });
@@ -73,11 +75,12 @@ export default {
     fontsNum += 1;
     this.totalProgress = fontsNum;
     this.loadingMessage = "Loading CanvasKit WASM...";
-    CanvasKitUtils.initCanvasKit("lib/").then((canvaskit) => {
+
+    CanvasKitUtils.initCanvasKit(this.$CANVASKIT_PATH).then((canvaskit) => {
       this.currentProgress++;
       this.loadingMessage = "Loading Fonts...";
       CanvasKitUtils.DEFAULT_FONTS.forEach((font) => {
-        let path = font.path;
+        let path = this.$DEFAULTFONTS_PATH + font.path;
         if (!path) {
           this.currentProgress++;
           return;

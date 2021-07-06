@@ -177,7 +177,6 @@ export default {
         }
       },
       set(v) {
-        console.log(v);
         this.changeProperty(this.currentSelection, "hAlign", v);
       },
     },
@@ -190,7 +189,6 @@ export default {
         }
       },
       set(v) {
-        console.log(v);
         this.changeProperty(this.currentSelection, "vAlign", v);
       },
     },
