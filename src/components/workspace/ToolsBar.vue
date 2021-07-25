@@ -1,17 +1,23 @@
 <template>
-  <div id="tool" class="darkbg">
-    <div class="tools-group" v-for="group in groups" :key="group.name">
-      <div class="tool-container" v-for="tool in group.tools" :key="tool.id">
-        <button
-          :id="tool.id"
-          type="button"
-          class="btn btn-primary action-button"
-          @click="click"
-        >
-          <span :class="tool.id == currentTool ? '' : 'deactive-icon'"
-            ><i class="iconfont" :class="tool.icon" style="font-size: 20px"></i
-          ></span>
-        </button>
+  <div id="drawer-tool-bar-container" class="blackbg">
+    <div id="drawer-tool-bar" class="darkbg">
+      <div class="tools-group" v-for="group in groups" :key="group.name">
+        <div class="tool-container" v-for="tool in group.tools" :key="tool.id">
+          <button
+            :id="tool.id"
+            type="button"
+            class="btn btn-primary action-button"
+            @click="click"
+          >
+            <span :class="tool.id == currentTool ? '' : 'deactive-icon'"
+              ><i
+                class="iconfont"
+                :class="tool.icon"
+                style="font-size: 18px"
+              ></i
+            ></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -145,13 +151,21 @@ export default {
 </script>
 
 <style>
-#tool {
+#drawer-tool-bar-container {
+  height: 100%;
+  width: 100%;
+  padding: 5px 0px 0px 0px;
+  box-sizing: border-box;
+}
+
+#drawer-tool-bar {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   padding: 20px 5px 20px 5px;
+  border-radius: 5px;
 }
 
 .tools-group {
@@ -159,14 +173,15 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
-  border-bottom: #333333 solid 1px;
   padding: 10px 0 10px 0;
+  border-bottom: 1px solid #777777;
   box-sizing: border-box;
 }
 
 .tool-container {
   flex: 50%;
   max-width: 50%;
+  min-width: 50%;
 }
 
 .deactive-icon {
@@ -174,14 +189,12 @@ export default {
 }
 
 .active-tool {
-  font-size: 16px;
   color: whitesmoke;
   cursor: pointer;
 }
 
 .clickable-icon {
   cursor: pointer;
-  font-size: 16px;
 }
 
 .action-button {
@@ -202,7 +215,7 @@ export default {
 .btn-primary:disabled {
   background-color: transparent;
   border-color: transparent;
-  color: #777777;
+  color: #999999;
 }
 
 .action-button:hover {

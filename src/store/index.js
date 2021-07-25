@@ -6,7 +6,11 @@ const state = {
   document: null,
   status: '',
   selections: [],
-  actionStack: new ActionStack(),
+  actionStack: {
+    "Drawer": new ActionStack(),
+    "Animation": new ActionStack()
+  },
+  currentWorkspace: 'Drawer',
   defaultFont: {
     family: 'Arial',
     size: 10
@@ -16,6 +20,10 @@ const state = {
 }
 
 const mutations = {
+  switchWorkspace(state, id) {
+    state.currentWorkspace = id;
+
+  },
   addFontFamily(state, font) {
     state.fonts.push(font);
   },
@@ -87,19 +95,19 @@ const getters = {
 
 const actions = {
   excuteAction({ commit, state }, action) {
-    state.actionStack.excute(action);
+    state.actionStack[state.currentWorkspace].excute(action);
   },
 
   redo({ commit, state }) {
-    state.actionStack.redo();
+    state.actionStack[state.currentWorkspace].redo();
   },
 
   undo({ commit, state }) {
-    state.actionStack.undo();
+    state.actionStack[state.currentWorkspace].undo();
   },
 
   cleanActionStack({ commit, state }) {
-    state.actionStack.dispose();
+    state.actionStack[state.currentWorkspace].dispose();
   },
 
   addSelection({ commit, state }, f) {

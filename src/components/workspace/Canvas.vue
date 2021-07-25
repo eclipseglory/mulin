@@ -1,54 +1,67 @@
 <template>
-  <div id="work-space" :class="canvasBGColor">
-    <div id="tools-container">
-      <tools-bar
-        @tool:update="toolUpdate"
-        :currentTool="currentTool"
-        :disabled="this.mainRoot == null"
-      />
-    </div>
+  <div id="center-workspace" :class="canvasBGColor">
     <div id="canvas-space">
       <div id="canvas-toolbar">
         <action-bar />
       </div>
-      <div
-        id="canvas-container"
-        :style="'cursor:' + cursor"
-        @dragover="resourceDragover"
-        @drop="resourceDrop"
-      >
-        <div
-          v-show="loading"
-          class="painter-canvas loading-container darkbg"
-          style="z-index: 4"
+      <div id="work-space">
+        <section
+          style="
+            max-width: 80px;
+            min-width: 80px;
+            background-color: red;
+            height: 100%;
+          "
         >
-          <div class="spinner-grow" role="status">
-            <span class="visually-hidden">Loading...</span>
+          <tools-bar
+            @tool:update="toolUpdate"
+            :currentTool="currentTool"
+            :disabled="this.mainRoot == null"
+          />
+        </section>
+        <div
+          id="canvas-container"
+          :style="'cursor:' + cursor"
+          @dragover="resourceDragover"
+          @drop="resourceDrop"
+        >
+          <div
+            v-show="loading"
+            class="painter-canvas loading-container blackbg"
+            style="z-index: 4"
+          >
+            <div class="spinner-grow" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
+          <textarea
+            v-show="this.showTextInput"
+            ref="canvas-text-input"
+            id="canvas-text-input"
+            class="form-control"
+            autofocus="autofocus"
+            :style="textInputStyle"
+            style="max-width: 300px; position: absolute; z-index: 3"
+          />
+          <canvas
+            id="front-canvas"
+            class="painter-canvas"
+            style="z-index: 2"
+            @mousedown.self="mousedown"
+            @mouseleave="mouseleave"
+            @mousemove="mousemove"
+            @mouseup="mouseup"
+            @mouseover="mouseover"
+            @mouseout="mouseout"
+            @mousewheel="mousewheel"
+          />
+          <canvas id="main-canvas" class="painter-canvas" style="z-index: 1" />
+          <canvas
+            id="backend-canvas"
+            class="painter-canvas"
+            style="z-index: 0"
+          />
         </div>
-        <textarea
-          v-show="this.showTextInput"
-          ref="canvas-text-input"
-          id="canvas-text-input"
-          class="form-control"
-          autofocus="autofocus"
-          :style="textInputStyle"
-          style="max-width: 300px; position: absolute; z-index: 3"
-        />
-        <canvas
-          id="front-canvas"
-          class="painter-canvas"
-          style="z-index: 2"
-          @mousedown.self="mousedown"
-          @mouseleave="mouseleave"
-          @mousemove="mousemove"
-          @mouseup="mouseup"
-          @mouseover="mouseover"
-          @mouseout="mouseout"
-          @mousewheel="mousewheel"
-        />
-        <canvas id="main-canvas" class="painter-canvas" style="z-index: 1" />
-        <canvas id="backend-canvas" class="painter-canvas" style="z-index: 0" />
       </div>
     </div>
   </div>
@@ -93,8 +106,6 @@ import ActionBar from "./ActionBar.vue";
 import { keyboardhandler, rootfigurecreator } from "../../mixins";
 import docstoremapper from "../../store/doc-store-mapper";
 import { toRaw } from "@vue/reactivity";
-import { PathShape } from "../../../figures/shape";
-import { Point } from "../../../figures";
 
 const mixins = [keyboardhandler, rootfigurecreator, docstoremapper];
 
@@ -472,7 +483,7 @@ export default {
         id == "line" ||
         id == "text" ||
         id == "v-text" ||
-        id =='curve'
+        id == "curve"
       );
     },
 
@@ -772,11 +783,11 @@ export default {
       };
     },
     canvasBGColor() {
-      if (this.mainRoot) {
-        return "graybg";
-      } else {
-        return "blackbg";
-      }
+      // if (this.mainRoot) {
+      //   return "graybg";
+      // } else {
+      return "blackbg";
+      // }
     },
 
     currentSelections() {
@@ -832,20 +843,15 @@ export default {
       deep: true,
     },
   },
-
-  props: {
-    // currentTool: {
-    //   type: String,
-    //   default: null,
-    // },
-  },
 };
 </script>
 
 <style>
 #work-space {
   display: flex;
-  align-content: stretch;
+  flex-direction: row;
+  align-items: stretch;
+  flex-grow: 1;
   width: 100%;
   height: 100%;
 }
@@ -855,7 +861,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
 }
 
 #canvas-toolbar {
@@ -895,5 +901,18 @@ export default {
 
 #canvas-text-input {
   padding: 0px;
+}
+
+#center-workspace {
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+#switch-bar {
+  width: 38.2%;
+  padding: 5px;
+  box-sizing: border-box;
 }
 </style>

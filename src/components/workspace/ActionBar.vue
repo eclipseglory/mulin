@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas-action-bar graybg">
+  <div class="canvas-action-bar darkbg">
     <div class="action-bar-main">
       <div class="action-container">
         <button
@@ -316,7 +316,9 @@ export default {
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
-  border-bottom: #777777 solid 1px;
+   height:2em;
+  /* border-bottom: #777777 solid 1px; */
+  border-radius: 5px;
 }
 
 .action-bar-main {

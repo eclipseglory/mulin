@@ -16,6 +16,8 @@ export default {
                     this.mainRoot.refresh();
                 }
                 this.loading = false;
+                clearTimeout(this._resizeUpdateId);
+                this._resizeUpdateId = undefined;
             }, 500);
 
         });

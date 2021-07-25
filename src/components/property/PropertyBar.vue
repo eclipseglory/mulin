@@ -362,6 +362,7 @@ export default {
   padding: 20px;
   box-sizing: border-box;
   color: whitesmoke;
+  border-radius: 5px;
 }
 
 .properties-accordion-root {

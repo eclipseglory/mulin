@@ -7,6 +7,10 @@ project.md
 /tests
 /download
 /old
+/src/mixins
+/src/figure
+
+vue.config.js
 
 # local env files
 .env.local

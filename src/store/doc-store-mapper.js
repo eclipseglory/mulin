@@ -21,13 +21,13 @@ export default {
             },
 
             selections: state => state.selections,
-            actionStack: state => state.actionStack
+            actionStack: state => state.actionStack[state.currentWorkspace]
         }),
-        ...mapGetters(['documentIsEmpty', 'isEmptySelections', 'fonts','images'])
+        ...mapGetters(['documentIsEmpty', 'isEmptySelections', 'fonts', 'images'])
     },
 
     methods: {
-        ...mapMutations(['updateDocument', 'updateStatus', 'updateSelections', 'addImage', 'removeImage']),
+        ...mapMutations(['updateDocument', 'updateStatus', 'updateSelections', 'addImage', 'removeImage','switchWorkspace']),
         ...mapActions(['cleanActionStack', 'redo', 'undo', 'excuteAction',
             'addSelection', 'removeSelection', 'removeSelections', 'concatSelections', 'cleanSelections'])
     }

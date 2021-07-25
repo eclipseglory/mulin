@@ -119,7 +119,7 @@
         </ul> -->
       </div>
       <form class="form-inline">
-        <a :href="$root.$GITHUB" class="nav-link action-button" target="_blank"
+        <a v-once :href="$root.$GITHUB" class="nav-link action-button"   target="_blank"
           ><i class="iconfont icon-GitHub"></i
         ></a>
       </form>
@@ -137,7 +137,6 @@
 import NewDocDialog from "./NewDocDialog.vue";
 import docstoremapper from "../store/doc-store-mapper";
 import LoadDialog from "./LoadDialog.vue";
-import { exportToSVG } from "figures/exporter";
 import EditMenu from "./menus/edit-menu.vue";
 import FigureMenu from "./menus/figure-menu.vue";
 import ImageImportDialog from "./ImageImportDialog.vue";
@@ -244,7 +243,6 @@ export default {
   box-sizing: border-box;
 }
 
-/* ============ desktop view ============ */
 @media all and (min-width: 992px) {
   .navbar-nav li {
     position: relative;
@@ -259,5 +257,4 @@ export default {
     display: block;
   }
 }
-/* ============ desktop view .end// ============ */
 </style>
