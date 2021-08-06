@@ -13,7 +13,13 @@
       <div id="animation-column">
         <animation-list />
       </div>
-      <div id="animation-controller-panel" class="darkbg"></div>
+      <div id="animation-controller-panel" class="darkbg">
+        <div style="width: 23.6%"></div>
+        <div style="flex-grow: 1">
+          <AnimationKeyFrameView />
+        </div>
+        <div style="width: 14.8%"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -22,8 +28,14 @@
 import Canvas from "./workspace/Canvas.vue";
 import PropertyBar from "./property/PropertyBar.vue";
 import AnimationList from "./animations/AnimationList.vue";
+import AnimationKeyFrameView from "./animations/AnimationKeyFrameView.vue";
 
-const components = { Canvas, PropertyBar, AnimationList };
+const components = {
+  Canvas,
+  PropertyBar,
+  AnimationList,
+  AnimationKeyFrameView,
+};
 export default { components };
 </script>
 
@@ -38,7 +50,8 @@ export default { components };
 
 #animation-controller-panel {
   flex-grow: 1;
-  border-radius: 5px;
+  display: flex;
+  align-items: stretch;
 }
 
 #animation-drawer-contianer {
@@ -46,6 +59,7 @@ export default { components };
   width: 100%;
   height: 61.8%;
 }
+
 
 #animation-column {
   display: flex;

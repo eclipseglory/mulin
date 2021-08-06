@@ -3,12 +3,10 @@ node_modules
 /dist
 
 project.md
-/public
 /tests
 /download
 /old
-/src/mixins
-/src/figure
+/mulin2
 
 vue.config.js
 

@@ -1,0 +1,131 @@
+@import url('iconfont.css');
+/*  template pink
+.blackbg{
+  background-color: #313131;
+}
+
+.darkbg {
+    background-color: #414141;
+}
+
+.graybg {
+    background-color: #525252;
+}
+
+
+.bluebg{
+    background-color:#ec625f;
+} */
+
+/* 
+Template Brown
+.blackbg{
+  background-color: #39311d;
+}
+
+.darkbg {
+    background-color: #7e7474;
+}
+
+.graybg {
+    background-color: #c4b6b6;
+}
+.bluebg{
+    background-color:#ffdd93;
+} */
+
+/* Template bright
+.blackbg{
+  background-color: #f4f4f2;
+}
+
+.darkbg {
+    background-color: #e8e8e8;
+}
+
+.graybg {
+    background-color: #bbbfca;
+}
+
+.bluebg{
+    background-color:#495464;
+} */
+
+.blackbg{
+  background-color: #313131;
+}
+
+.darkbg {
+    background-color: #414141;
+}
+
+.graybg {
+    background-color: #525252;
+}
+
+.bluebg{
+    background-color:#3D8BFD;
+}
+
+
+.lightgraycolor{
+  color:#777777
+}
+  
+.icon{
+    color:#777777
+}
+
+.loading-container{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rotate-cursor{
+  cursor:url(assets/images/cursor-rotate.png),auto;
+}
+
+.icon:hover{
+    color:whitesmoke
+}
+
+.fadeout{
+    -webkit-animation: arrowOut 0.3s linear forwards;
+    animation: arrowOut 0.3s linear forwards;
+}
+
+.gray-splitter{
+  height: 1px; 
+  width: 100%; 
+  margin:10px 0 10px 0;
+  background-color: #777777;
+}
+
+@-webkit-keyframes arrowOut {
+    from {opacity:1}
+    to {opacity:0}
+}
+
+@keyframes arrowOut {
+    from {opacity:1}
+    to {opacity:0}
+}
+  
+  .property-label {
+    padding-right: 5px;
+    padding-left: 5px;
+    box-sizing: border-box;
+    text-align: left;
+    max-width:30%;
+  }
+  
+  .disabled-label {
+    color: #777777;
+  }
+
+  .property-value{
+      max-width: 70%;
+      text-align: center;
+  }
+  

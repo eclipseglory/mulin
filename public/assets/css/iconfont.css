@@ -1,0 +1,322 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2533421 */
+  src: url('iconfont.woff2?t=1626860041099') format('woff2'),
+       url('iconfont.woff?t=1626860041099') format('woff'),
+       url('iconfont.ttf?t=1626860041099') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-animation:before {
+  content: "\e64c";
+}
+
+.icon-drawing:before {
+  content: "\e6e7";
+}
+
+.icon-GitHub:before {
+  content: "\e601";
+}
+
+.icon-pen-curve:before {
+  content: "\e63e";
+}
+
+.icon-l-gradient:before {
+  content: "\e887";
+}
+
+.icon-cancel:before {
+  content: "\e695";
+}
+
+.icon-r-gradient:before {
+  content: "\e6a6";
+}
+
+.icon-width:before {
+  content: "\e654";
+}
+
+.icon-height:before {
+  content: "\e655";
+}
+
+.icon-cap-square:before {
+  content: "\e66d";
+}
+
+.icon-cap-round:before {
+  content: "\e66e";
+}
+
+.icon-cap-butt:before {
+  content: "\e66f";
+}
+
+.icon-join-miter:before {
+  content: "\e6b6";
+}
+
+.icon-join-bevel:before {
+  content: "\e6b7";
+}
+
+.icon-join-round:before {
+  content: "\e6b8";
+}
+
+.icon-rotation:before {
+  content: "\ea64";
+}
+
+.icon-font-size:before {
+  content: "\e659";
+}
+
+.icon-line-spacing:before {
+  content: "\e720";
+}
+
+.icon-font-family:before {
+  content: "\e647";
+}
+
+.icon-angle:before {
+  content: "\e612";
+}
+
+.icon-text-spacing:before {
+  content: "\e73e";
+}
+
+.icon-y-skew:before {
+  content: "\e6fe";
+}
+
+.icon-x-skew:before {
+  content: "\e6ff";
+}
+
+.icon-scale-y:before {
+  content: "\e95f";
+}
+
+.icon-scaly-x:before {
+  content: "\e960";
+}
+
+.icon-copy:before {
+  content: "\ef86";
+}
+
+.icon-paste:before {
+  content: "\f068";
+}
+
+.icon-image:before {
+  content: "\e613";
+}
+
+.icon-v-text:before {
+  content: "\e82f";
+}
+
+.icon-text-align-center:before {
+  content: "\ef12";
+}
+
+.icon-text-align-left:before {
+  content: "\ef14";
+}
+
+.icon-text-align-right:before {
+  content: "\ef15";
+}
+
+.icon-text:before {
+  content: "\e81a";
+}
+
+.icon-text-align-mid:before {
+  content: "\e604";
+}
+
+.icon-text-align-top:before {
+  content: "\e607";
+}
+
+.icon-text-align-bottom:before {
+  content: "\e609";
+}
+
+.icon-line:before {
+  content: "\ea1a";
+}
+
+.icon-arrow-right:before {
+  content: "\ef1f";
+}
+
+.icon-brush:before {
+  content: "\f062";
+}
+
+.icon-pen:before {
+  content: "\f071";
+}
+
+.icon-shapes:before {
+  content: "\f0ad";
+}
+
+.icon-distribute-bottom:before {
+  content: "\f2d4";
+}
+
+.icon-align-center:before {
+  content: "\e65c";
+}
+
+.icon-align-right:before {
+  content: "\e65d";
+}
+
+.icon-align-top:before {
+  content: "\e65e";
+}
+
+.icon-align-v-center:before {
+  content: "\e65f";
+}
+
+.icon-align-bottom:before {
+  content: "\e660";
+}
+
+.icon-align-left:before {
+  content: "\e661";
+}
+
+.icon-distribute-center:before {
+  content: "\e666";
+}
+
+.icon-distribute-top:before {
+  content: "\e667";
+}
+
+.icon-distribute-v-center:before {
+  content: "\e668";
+}
+
+.icon-distribute-left:before {
+  content: "\e669";
+}
+
+.icon-distribute-right:before {
+  content: "\e66a";
+}
+
+.icon-document:before {
+  content: "\e66c";
+}
+
+.icon-undo:before {
+  content: "\e65a";
+}
+
+.icon-redo:before {
+  content: "\e65b";
+}
+
+.icon-lock:before {
+  content: "\f03a";
+}
+
+.icon-trash:before {
+  content: "\f116";
+}
+
+.icon-unlock:before {
+  content: "\f128";
+}
+
+.icon-circle:before {
+  content: "\f283";
+}
+
+.icon-square:before {
+  content: "\f2d2";
+}
+
+.icon-rotate:before {
+  content: "\f124";
+}
+
+.icon-fill:before {
+  content: "\efd1";
+}
+
+.icon-border:before {
+  content: "\e71b";
+}
+
+.icon-send-back:before {
+  content: "\e623";
+}
+
+.icon-bring-front:before {
+  content: "\e622";
+}
+
+.icon-mask-unclip:before {
+  content: "\e6a3";
+}
+
+.icon-mask-clip:before {
+  content: "\e8f0";
+}
+
+.icon-group:before {
+  content: "\f2c6";
+}
+
+.icon-ungroup:before {
+  content: "\f2c7";
+}
+
+.icon-position:before {
+  content: "\e671";
+}
+
+.icon-mousepointer:before {
+  content: "\eb75";
+}
+
+.icon-star:before {
+  content: "\f2d3";
+}
+
+.icon-vertexpointer:before {
+  content: "\ed4c";
+}
+
+.icon-polygon:before {
+  content: "\e6cb";
+}
+
+.icon-vertices:before {
+  content: "\e600";
+}
+
+.icon-path-shape:before {
+  content: "\e610";
+}
+

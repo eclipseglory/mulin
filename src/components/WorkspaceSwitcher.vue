@@ -26,7 +26,7 @@ export default {
       switchers: {
         Drawer: {
           icon: "icon-drawing",
-          actived: false,
+          actived: true,
           path: "Drawer",
         },
         Animation: {
