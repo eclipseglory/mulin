@@ -240,7 +240,18 @@ export default class CanvasKitUtils {
     }
 
     static makeCanvasSurface(id) {
-        return CanvasKit.MakeCanvasSurface(id);
+        let s;
+        try {
+            s = CanvasKit.MakeCanvasSurface(id);
+        } catch (e) {
+            console.warn('Can not create webgl context', e);
+            try {
+                s = CanvasKit.MakeSWCanvasSurface(id);
+            } catch (e) {
+                console.error('fail to create canvas surface');
+            }
+        }
+        return s;
     }
 
     static newPaint() {
